@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project",
+  "description": "Draft schema for project manifests in the toolbox scaffold.",
+  "type": "object",
+  "required": ["name", "slug", "owner", "created", "catalog_refs"],
+  "properties": {
+    "name": {"type": "string"},
+    "slug": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "owner": {"type": "string"},
+    "created": {"type": "string", "format": "date-time"},
+    "catalog_refs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "goals": {"type": "array", "items": {"type": "string"}},
+    "risks": {"type": "array", "items": {"type": "string"}},
+    "inputs": {"type": "array", "items": {"type": "string"}},
+    "outputs": {"type": "array", "items": {"type": "string"}},
+    "security_notes": {"type": "string"}
+  },
+  "additionalProperties": true
+}

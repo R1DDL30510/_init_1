@@ -1,0 +1,20 @@
+# GARVIS default configuration for Codex CLI inside the toolbox stack.
+# Focused on local-only usage with the Ollama service from docker-compose.
+model_provider = "ollama"
+model = "gpt-oss:20b"
+preferred_auth_method = "none"
+allow_analytics = false
+
+[model_providers.ollama]
+name = "Local Ollama"
+base_url = "http://host.docker.internal:11434/v1"
+wire_api = "chat"
+transport = "http"
+
+[profiles.garvis]
+model_provider = "ollama"
+model = "gpt-oss:20b"
+
+[profiles.garvis.session]
+# Start every session in the shared workspace mount.
+workspace_path = "/workspace"

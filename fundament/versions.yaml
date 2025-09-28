@@ -1,0 +1,24 @@
+# Baseline host platform notes for the House/Toolbox scaffold.
+# Halte dieses Dokument minimal: nur OS, Architektur und zwingende Host-Services.
+
+host:
+  os: "macOS 26.0 (25A354)"
+  architecture: "arm64"
+  notes:
+    - "Apple Silicon Host (per `sw_vers`) für das House-Repository"
+    - "Docker Desktop bereitgestellt als Container-Laufzeit"
+
+infrastructure:
+  docker:
+    desktop: "4.47.0 (206054)"
+    engine: "28.4.0"
+    api_version: "1.51"
+    containerd: "1.7.27"
+    runc: "1.2.5"
+    docker_init: "0.19.0"
+  git:
+    host_version: "2.50.1 (Apple Git-155)"
+
+references:
+  - "Weitere Tool- und Paketlisten liegen im Basement: basement/toolbox/inventories/"
+  - "Promotion-Gates werden in fundament/STATE_VERIFICATION.md dokumentiert."

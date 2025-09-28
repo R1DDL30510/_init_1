@@ -1,0 +1,12 @@
+# Umgebungskatalog (Entwurf)
+# Do not verbindlich einsetzen, bevor Host-Checks aus dem Fundament greifen.
+
+environments:
+  - id: windows11-wsl2
+    os: Windows
+    version: "11"
+    notes: "Docker Desktop (WSL2, GPU)"
+  - id: macos-colima
+    os: macOS
+    version: "14"
+    notes: "Colima mit optionalem GPU-Support"

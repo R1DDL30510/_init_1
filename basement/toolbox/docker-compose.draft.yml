@@ -1,0 +1,10 @@
+services:
+  codex-cli:
+    build: ./containers/codex-cli
+    tty: true
+    stdin_open: true
+    working_dir: /workspace
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    volumes:
+      - ./shared:/workspace

@@ -1,0 +1,5 @@
+# Placeholder ignore rules for future toolbox mono-repo.
+# Do not entfernen, bevor endgültige Patterns abgestimmt sind.
+
+.env.local
+storage/vault/

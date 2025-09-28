@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# GARVIS helper to launch Codex CLI inside the toolbox compose stack.
+# Routes all interaction through the shared /workspace volume and the `garvis` profile.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+COMPOSE_FILE="${REPO_ROOT}/basement/toolbox/docker-compose.draft.yml"
+SHARED_DIR="${REPO_ROOT}/basement/toolbox/shared"
+
+if [[ ! -f "${COMPOSE_FILE}" ]]; then
+  echo "[gcodex] compose file not found: ${COMPOSE_FILE}" >&2
+  exit 1
+fi
+
+mkdir -p "${SHARED_DIR}"
+
+SESSION_NAME="gcodex-session-$(date +%s)"
+
+# Build command array: default interactive session. Additional args extend codex call.
+CMD=("codex" "--profile" "garvis")
+if [[ $# -gt 0 ]]; then
+  CMD+=("$@")
+fi
+
+TTY_FLAGS=(-it)
+if [[ ! -t 0 || ! -t 1 ]]; then
+  TTY_FLAGS=(-i)
+fi
+
+exec docker compose -f "${COMPOSE_FILE}" run --rm "${TTY_FLAGS[@]}" \
+  --name "${SESSION_NAME}" \
+  --workdir /workspace \
+  codex-cli "${CMD[@]}"

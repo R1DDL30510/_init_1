@@ -1,0 +1,13 @@
+name: "Titel des Projekts"
+slug: "area-topic-scope"
+owner: "Andrey"
+created: "2025-09-27T00:00:00Z"
+catalog_refs: ["git", "ffmpeg"]
+goals:
+  - "Nachverfolgbare Pipeline X"
+  - "Reproduzierbare Messung Y"
+inputs: []
+outputs: []
+security_notes: |
+  Keine personenbezogenen Daten im Repo.
+  Rohdaten in storage/vault, nur Checksums hier.

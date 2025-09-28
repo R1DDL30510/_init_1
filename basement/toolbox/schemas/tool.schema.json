@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Tool",
+  "description": "Draft schema for toolbox tool entries.",
+  "type": "object",
+  "required": ["id", "version", "platforms"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "version": {"type": "string"},
+    "platforms": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "source": {"type": "object"},
+    "verify": {"type": "object"}
+  },
+  "additionalProperties": true
+}

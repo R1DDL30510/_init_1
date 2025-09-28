@@ -1,0 +1,11 @@
+# Modellkatalog (Entwurf)
+# Do not pflegen reale Artefakte, solange das Stack-Design iteriert.
+
+models:
+  - name: placeholder-llm
+    context_window: 4096
+    quantization: TBD
+    source:
+      homepage: https://example.org/models
+      download_url: null
+    sha256: ""

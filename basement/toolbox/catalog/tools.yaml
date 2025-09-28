@@ -1,0 +1,21 @@
+# Werkzeugkatalog (Entwurf)
+# Do not freigeben, bevor Versionen und Checksums verifiziert sind.
+
+tools:
+  - id: git
+    version: "2.47.0"
+    platforms: [windows, macos, linux]
+    source:
+      homepage: https://git-scm.com
+      download_url: null
+    verify:
+      type: cli
+      cmd: ["git", "--version"]
+  - id: ffmpeg
+    version: "8.0"
+    platforms: [windows, macos, linux]
+    source:
+      homepage: https://ffmpeg.org
+    verify:
+      type: cli
+      cmd: ["ffmpeg", "-version"]
