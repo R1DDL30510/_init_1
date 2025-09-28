@@ -4,6 +4,16 @@ Dieses Projekt bündelt die geplante Docker-Stack-Integration von Codex CLI, lok
 Momentan dient der Ordner nur als Sammelstelle für Anforderungen und Abhängigkeiten.
 Do not ablegen funktionierende Compose-Dateien oder Secrets, bevor das Konzept freigegeben ist.
 
+## Verifizierter Funktionsstand (2024-12-05)
+- `docker compose -f basement/toolbox/docker-compose.draft.yml build codex-cli`
+  wurde erfolgreich ausgeführt. Der Build erstellt das Container-Image für Codex CLI
+  samt vorkonfiguriertem `/workspace`-Mount.
+- `./basement/toolbox/bin/gcodex` startet die Codex CLI aus dem Container im Verzeichnis
+  `/workspace` und nutzt den Host-Ollama-Endpunkt `http://host.docker.internal:11434`.
+  Darüber konnte ein Chat mit dem gepinnten Modell `gpt-oss:20b` geführt werden.
+- Die Container-Anbindung bleibt auf den Host beschränkt; es werden keine zusätzlichen
+  Netzwerk-Routen geöffnet.
+
 ## Baseline-Abhängigkeiten (Stand)
 - Host: macOS 26.0 (arm64) mit Docker Desktop 4.47.0 / Engine 28.4.0 (`fundament/versions.yaml`).
 - Toolbox-Paketbasis: Homebrew-Inventar unter `../inventories/Brewfile` und `../inventories/homebrew-versions.txt`.
