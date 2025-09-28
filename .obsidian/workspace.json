@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "be1495c207628e2f",
+        "id": "cb80be3b93a9b0ec",
         "type": "tabs",
         "children": [
           {
-            "id": "865b2cf235f7597e",
+            "id": "030cd51193567198",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -169,43 +169,43 @@
       "bases:Create new base": false
     }
   },
-  "active": "865b2cf235f7597e",
+  "active": "030cd51193567198",
   "lastOpenFiles": [
-    "basement/toolbox/README.md",
-    "entrance/canary/README.md",
+    "Untitled 1.base",
+    "Untitled.base",
+    "docs/architecture.md",
     "README.md",
+    "basement/toolbox/containers/README.md",
+    "basement/toolbox/CHANGELOG.md",
+    "basement/toolbox/CODE_OF_CONDUCT.md",
+    "basement/toolbox/README.md",
+    "basement/toolbox/SECURITY.md",
     "basement/g-openwebui/README.md",
+    "basement/g-ollama/README.md",
+    "entrance/canary/README.md",
     "basement/toolbox/bin/gcodex",
     "basement/toolbox/bin",
     "basement/toolbox/containers/codex-cli/config/config.toml",
     "basement/toolbox/containers/codex-cli/config",
     "basement/toolbox/shared",
     "basement/toolbox/docker-compose.draft.yml",
-    "basement/toolbox/containers/README.md",
     "basement/toolbox/containers/codex-cli/Dockerfile",
     "basement/toolbox/containers/codex-cli",
     "basement/toolbox/containers",
     "basement/toolbox/documents/draft-compose-notes.md",
-    "basement/toolbox/documents",
-    "basement/g-ollama/README.md",
     "fundament/docker/README.md",
     "basement/README.md",
-    "basement/toolbox/SECURITY.md",
     "stable/host1/README.md",
     "stable/host2/README.md",
     "stable/monitoring/README.md",
     "fundament/README.md",
     "fundament/STATE_VERIFICATION.md",
     "basement/toolbox/inventories/README.md",
-    "basement/toolbox/CHANGELOG.md",
-    "basement/toolbox/CODE_OF_CONDUCT.md",
     "AGENTS.md",
     "wardrobe/README.md",
     "wardrobe/overlays/gpu/README.md",
     "basement/toolbox/projects/toolbox/README.md",
     "basement/toolbox/projects/README.md",
-    "basement/toolbox/scripts/README.md",
-    "basement/toolbox/projects/_template/plans/tasks.md",
-    "basement/toolbox/projects/_template/plans/ADR-0001-title.md"
+    "basement/toolbox/scripts/README.md"
   ]
 }
