@@ -1,5 +1,6 @@
 Fundament layer sammelt Basis-Konfigurationen und gemeinsame Vorbereitungen.
 Es dient als Ausgangspunkt für Netzwerke, Volumes und künftige Host-Prüfungen.
+Aktueller Überblick: siehe ../docs/revision-2025-09-28.md (Layer Snapshot "Fundament").
 Do not hinterlege laufzeitkritische Overrides oder produktive Zugangsdaten hier.
 
 ## Host-Baselines (Stand)

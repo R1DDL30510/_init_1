@@ -42,8 +42,6 @@ services:
     working_dir: /workspace
 ```
 _Do not als echte Compose-Datei verwenden, solange der Build-/Release-Prozess nicht freigegeben ist._
-```
-_Do not als echte Compose-Datei verwenden, solange der Build-/Release-Prozess nicht freigegeben ist._
 
 ### CLI-Alias `gcodex`
 - Host-Skript: `basement/toolbox/bin/gcodex`
@@ -60,14 +58,16 @@ _Do not als echte Compose-Datei verwenden, solange der Build-/Release-Prozess ni
 - Umgang mit Credentials/API-Keys: wahrscheinlich `.env.local` auf Host-Seite + Weitergabe über Compose.
 - Logging-Strategie: Rotierung, Ablage im Shared Volume oder späterer Export.
 - MCP-Gateway-Spezifikation: Schnittstellen, erforderliche Tools, Sicherheitsmodell.
+- Wardrobe-Integration: Definition der Overlays, die sowohl macOS- als auch Windows/NVIDIA-Hosts ohne erneutes Provisioning nutzbar machen (z. B. GPU-spezifische Treiber-Pfade, Volume-Layout, persistente Shared Workspace-Struktur).
 
 ## Pending Tasks
 1. Basisimage für `codex-cli` finalisieren, Dockerfile-Konzept in `containers/codex-cli/` vorbereiten (Sicherheitsreview ausstehend).
 2. Compose-Skelett in eine Draft-Datei (`docker-compose.draft.yml`) übertragen und intern reviewen.
 3. Modell-Download-Strategie festhalten (`ollama pull <modell>` auf dem Host; `gpt-oss:20b` liegt bereits im Cache).
-4. Benutzerfreundlichen Einstieg weiter verfeinern (z. B. `gcodex`-Wrapper in höhere Layer promoten, Logging/Tracing ergänzen).
-5. Sicherheits- und Isolationsanforderungen (Mounts, Ports, Netzwerk) prüfen und dokumentieren.
-6. MCP-Gateway als Anschlussmodul beschreiben (Abhängigkeiten, Ports, Schnittstellen) – erst nach Fertigstellung des Minimal-Stacks.
+ 4. Benutzerfreundlichen Einstieg weiter verfeinern (z. B. `gcodex`-Wrapper in höhere Layer promoten, Logging/Tracing ergänzen).
+ 5. Sicherheits- und Isolationsanforderungen (Mounts, Ports, Netzwerk) prüfen und dokumentieren.
+ 6. Wardrobe-Overlays für Multi-Host-Einsatz beschreiben (Mac ↔ Windows mit NVIDIA-GPU) und sicherstellen, dass der Shared Workspace konsistent bleibt.
+ 7. MCP-Gateway als Anschlussmodul beschreiben (Abhängigkeiten, Ports, Schnittstellen) – erst nach Fertigstellung des Minimal-Stacks.
 
 ## Testschritte (Draft)
 - `docker compose -f basement/toolbox/docker-compose.draft.yml build codex-cli`
