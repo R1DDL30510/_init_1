@@ -25,6 +25,7 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
 - [`docs/architecture.md`](docs/architecture.md): explains the House metaphor, current overlays, and planned flow between layers.
 - [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md): living snapshot of open planning tasks across layers.
 - [`docs/audit-matrix.md`](docs/audit-matrix.md): consolidated scoring of compliance against SHS strategic principles and broader industry standards (TLS, GDPR, observability, reproducibility).
+- [`docs/pre-release-audit.md`](docs/pre-release-audit.md): pre-release audit (PoC confidence 0.99) summarizing evidence, gaps, and gating actions for Wardrobe → Entrance promotion.
 
 ## Operational Reference
 ### Quickstart
