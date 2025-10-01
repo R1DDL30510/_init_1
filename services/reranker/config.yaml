@@ -1,0 +1,12 @@
+server:
+  host: 0.0.0.0
+  port: 8082
+  workers: 2
+model:
+  name: BAAI/bge-reranker-base
+  revision: pinned
+scoring:
+  top_k: 20
+  trace_header: X-Trace-Id
+health:
+  ready_path: /readyz

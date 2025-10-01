@@ -1,0 +1,43 @@
+schema_version: 1
+compose_schema_sha256: "***FILL***"
+services:
+  proxy:
+    image: caddy:2.7.6
+    digest: "***FILL***"
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:0.1.128
+    digest: "***FILL***"
+  n8n:
+    image: n8nio/n8n:1.45.1
+    digest: "***FILL***"
+  postgres:
+    image: postgres:15.6
+    digest: "***FILL***"
+  minio:
+    image: minio/minio:RELEASE.2024-01-11T07-46-16Z
+    digest: "***FILL***"
+  ocr:
+    image: ghcr.io/shs/offline-doctr:0.7.1
+    digest: "***FILL***"
+  tei:
+    image: ghcr.io/shs/local-tei:0.10.1
+    digest: "***FILL***"
+  reranker:
+    image: ghcr.io/shs/local-reranker:0.3.0
+    digest: "***FILL***"
+  ollama:
+    image: ollama/ollama:0.1.32
+    digest: "***FILL***"
+models:
+  embeddings:
+    provider: tei
+    model: BAAI/bge-small-en
+    embedding_dimension: 384
+  reranker:
+    provider: reranker
+    model: BAAI/bge-reranker-base
+integrity:
+  schema_files:
+    - db/schema.sql
+    - db/policies.sql
+  last_update: 2024-01-01T00-00-00Z

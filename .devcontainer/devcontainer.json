@@ -1,0 +1,38 @@
+{
+  "name": "shs-stack",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "version": "latest",
+      "moby": false
+    }
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
+  "containerEnv": {
+    "DOCKER_BUILDKIT": "1"
+  },
+  "runArgs": [
+    "--cap-drop=ALL",
+    "--security-opt", "no-new-privileges:true"
+  ],
+  "postCreateCommand": "make bootstrap",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-toolsai.jupyter",
+        "ms-ossdata.vscode-postgresql",
+        "yzhang.markdown-all-in-one",
+        "editorconfig.editorconfig"
+      ]
+    }
+  },
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace/_init_1",
+  "updateContentCommand": "make status"
+}

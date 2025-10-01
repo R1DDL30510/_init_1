@@ -1,21 +1,24 @@
 # House Architecture Scaffold
 
-Die House-Metapher strukturiert unser Repository in klar getrennte Ebenen, damit jede Schicht eine definierte Verantwortung trägt und Übergänge nachvollziehbar bleiben.
-Die tagesaktuelle Zusammenfassung steht in [revision-2025-09-28.md](revision-2025-09-28.md) und ergänzt die hier beschriebene Architektur um konkrete Aufgaben.
+Die House-Metapher strukturiert unser Repository in klar getrennte Ebenen. Dieses Dokument bündelt nun sämtliche Referenzen auf README, Runbook, Security-Guides und den neuen Compliance-Audit, damit jede Ebene konsistent dokumentiert bleibt.
 
+- **Primärer Überblick**: [`README.md`](../README.md) enthält die Repository-Atlas-Tabelle, Quickstart-Anweisungen und Konsolidierungs-Roadmap.
+- **Betrieb & Automatisierung**: [`RUNBOOK.md`](../RUNBOOK.md) verweist auf alle Makefile-Ziele und beschreibt Incident-, Backup- und Restore-Abläufe.
+- **Sicherheitskontrollen**: [`SECURITY.md`](../SECURITY.md) definiert Bedrohungsmodell und Maßnahmen; Scores stehen in [`docs/audit-matrix.md`](audit-matrix.md).
+- **Planungsstand**: [`revision-2025-09-28.md`](revision-2025-09-28.md) dokumentiert offene Aufgaben je Layer.
 
 ## Layer Roles
-- **Fundament**: Verankert Basis-Setups, gemeinsame Netzwerke und Host-Anforderungen, bevor Services entstehen (nur Host-OS + Docker + Git).
-- **Basement**: Beherbergt nackte Komponenten-Stubs wie Ollama, Open-WebUI sowie das Toolbox-Mono-Repo zur Verwaltung von Tools, Versionen und Projekten.
-- **Wardrobe**: Stellt Überlagerungen, Verpackungen und Wrapper bereit (z. B. `basement/toolbox/bin/gcodex` für Codex-Chats) und bereitet Basement-Dienste für Tests vor.
-- **Entrance**: Dient als Frontdoor für frühe Nutzerinteraktionen, Canaries und Telemetrieexperimente.
-- **Stable**: Enthält freigegebene Produktions-Deployments sowie Monitoring- und Observability-Pfade.
+- **Fundament**: Verankert Basis-Setups, gemeinsame Netzwerke und Host-Anforderungen (nur Host-OS + Docker + Git). Siehe [`fundament/`](../fundament/).
+- **Basement**: Beherbergt Stubs für Ollama, OpenWebUI sowie das Toolbox-Monorepo zur Verwaltung von Tools, Versionen und Projekten. Siehe [`basement/`](../basement/) und `toolbox/`-Unterordner.
+- **Wardrobe**: Stellt Overlays (CPU/GPU/CI) und Wrapper (`bin/gcodex`) bereit und gleicht Host-Unterschiede aus. Siehe [`wardrobe/`](../wardrobe/).
+- **Entrance**: Dient als Frontdoor für frühe Nutzerinteraktionen, Canaries und Telemetrieexperimente. Siehe [`entrance/`](../entrance/).
+- **Stable**: Enthält Produktions-Deployments, Monitoring-Pläne und Promotion-Gates. Siehe [`stable/`](../stable/).
 
 ### Abgleich mit aktuellen Planungsannahmen
-- **Fundament** bleibt auf den Docker-Fokus reduziert: solange der Host zuverlässig Docker Desktop (bzw. passende Engine-Versionen auf anderen Plattformen) bereitstellt, kann jede weitere Schicht darauf aufbauen.
-- **Basement** priorisiert eine möglichst hostnahe Ausführung der LLM-Läufe. Ollama bleibt daher auf dem Host installiert, während der Codex-CLI-Container sich nur als dünner Client verhält und per Shared Workspace (`./shared:/workspace`) Dateien austauscht.
-- **Wardrobe** fungiert als „Suit Switcher“ zwischen unterschiedlichen Hosts. Overlays sollen sicherstellen, dass Sessions auf einem Windows/NVIDIA-System genauso starten wie auf dem macOS-Host, ohne Datenverluste oder manuelle Re-Konfiguration.
-- **Entrance** und **Stable** behalten ihren Planungsstatus; spätere Dokumentationen verlinken auf spezifische Canary-/Telemetry- bzw. Produktionspfade, sobald die Wardrobe-Overlays gefestigt sind.
+- **Fundament** bleibt Docker-zentriert, solange Host und Devcontainer identische Engine-Versionen nutzen. Abhängigkeiten werden in [`fundament/versions.yaml`](../fundament/versions.yaml) gespiegelt.
+- **Basement** priorisiert hostnahe LLM-Läufe; Codex-CLI-Container agiert als dünner Client gegen Host-Ollama. Entscheidungen werden in [`docs/audit-matrix.md`](audit-matrix.md) unter „Local Execution“ bewertet.
+- **Wardrobe** fungiert als „Suit Switcher“ zwischen Windows/NVIDIA und macOS. Fortschritte sind in [`revision-2025-09-28.md`](revision-2025-09-28.md) unter „Wardrobe“ gelistet.
+- **Entrance** und **Stable** behalten ihren Planungsstatus; künftige Promotions sollen Doppelstrukturen vermeiden, indem sie README-Roadmap und Audit-Scores gemeinsam aktualisieren.
 
 ## Mermaid Overview
 ```mermaid
@@ -51,11 +54,8 @@ flowchart TD
     B3 --> W5 --> E2 --> S3
 ```
 
-## Next Steps
-- Siehe [../fundament/](../fundament/) für Host-Baselines (OS, Docker, Git) und Promotion-Notizen.
-- Siehe [../basement/](../basement/) für Docker-Stubs der Kernkomponenten, das Toolbox-Skelett (`toolbox/`) und Wrapper wie `bin/gcodex`.
-- Siehe [../basement/toolbox/inventories/](../basement/toolbox/inventories/) für Homebrew-/Tool-Listen.
-- Siehe [../basement/toolbox/projects/toolbox/](../basement/toolbox/projects/toolbox/) für den Compose-Stack-Plan (Codex im Container, Ollama als Host-Service).
-- Siehe [../wardrobe/](../wardrobe/) für geplante Overlays und Wrapper.
-- Siehe [../entrance/](../entrance/) für Canary- und Telemetrie-Planflächen.
-- Siehe [../stable/](../stable/) für Produktions-Skelette und Monitoring-Pläne.
+## Konsolidierungsfahrplan
+- **Dokumentenfusion**: README (Atlas) + dieses Architektur-Dokument sollen mittelfristig in einer kombinierten „Architecture & Roadmap“-Seite aufgehen. Bis dahin verweist README auf diese Datei als Detailquelle.
+- **Redundanzprüfung**: Planungsdetails aus `revision-2025-09-28.md` sollten nach Abschluss einzelner Aufgaben hierher oder in die README-Roadmap migriert werden.
+- **Audit-Referenzen**: Jeder neue Kontrollpunkt muss sowohl in `SECURITY.md` als auch in `docs/audit-matrix.md` auftauchen; Linkpflege erfolgt hier.
+- **Layer-Promotions**: Sobald Wardrobe-Overlays produktionsreif sind, werden Entrance-/Stable-Platzhalter reduziert oder mit Compose-Profilen verschmolzen (vgl. README „Change Management & Consolidation“).

@@ -1,0 +1,242 @@
+
+services:
+  proxy:
+    profiles: [minimal, gpu]
+    image: ${PROXY_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    ports:
+      - "${SHS_PROXY_PORT:-8443}:8443"
+    environment:
+      CADDY_ADMIN: disabled
+      SHS_DOMAIN: ${SHS_DOMAIN:-localhost}
+      SHS_BASE: ${SHS_BASE:-/workspace/_init_1}
+      SHS_TLS_MODE: ${TLS_MODE:-local-ca}
+      LAN_ALLOWLIST: ${LAN_ALLOWLIST:-127.0.0.1/32}
+    healthcheck:
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      test:
+        - CMD-SHELL
+        - "caddy version >/dev/null 2>&1 && test -f /etc/caddy/tls/leaf.pem"
+    volumes:
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./secrets/tls:/etc/caddy/tls:ro
+      - ./logs:/var/log/shs:rw
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  openwebui:
+    profiles: [minimal, gpu]
+    image: ${OPENWEBUI_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    environment:
+      WEBUI_AUTH: "${OPENWEBUI_AUTH_MODE:-local}"
+      ENABLE_TELEMETRY: "0"
+      SHS_TRACE_SAMPLE_RATE: "${TRACE_SAMPLE_RATE:-1.0}"
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+      test:
+        - CMD-SHELL
+        - "curl --fail --silent http://localhost:8080/healthz || exit 1"
+    volumes:
+      - openwebui_data:/var/lib/open-webui
+      - ./services/openwebui/config.yaml:/app/config/config.yaml:ro
+      - ./logs:/var/log/shs:rw
+    depends_on:
+      proxy:
+        condition: service_started
+    read_only: false
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  n8n:
+    profiles: [minimal, gpu]
+    image: ${N8N_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    environment:
+      N8N_HOST: "${SHS_DOMAIN:-localhost}"
+      N8N_PROTOCOL: https
+      N8N_PORT: 5678
+      N8N_METRICS: true
+      N8N_LOG_LEVEL: info
+      N8N_ENCRYPTION_KEY: "***FILL***"
+      N8N_SECURE_COOKIE: true
+      N8N_BASIC_AUTH_USER: "***FILL***"
+      N8N_BASIC_AUTH_PASSWORD: "***FILL***"
+      WEBHOOK_URL: https://proxy:8443/hooks
+      TZ: UTC
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+      test:
+        - CMD-SHELL
+        - "curl --fail --silent http://localhost:5678/healthz || exit 1"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/init_flows.json:/docker-entrypoint-init.d/init_flows.json:ro
+      - ./logs:/var/log/shs:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    read_only: false
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  postgres:
+    profiles: [minimal, gpu]
+    image: ${POSTGRES_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-shs}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    healthcheck:
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      test:
+        - CMD-SHELL
+        - "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-shs} -h localhost"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ./db/policies.sql:/docker-entrypoint-initdb.d/20-policies.sql:ro
+      - ./logs:/var/log/shs:rw
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  minio:
+    profiles: [minimal, gpu]
+    image: ${MINIO_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    command: server /data --certs-dir /run/tls --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_DOMAIN: ${SHS_DOMAIN:-localhost}
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      test:
+        - CMD-SHELL
+        - "curl --fail --silent http://localhost:9000/minio/health/live || exit 1"
+    volumes:
+      - minio_data:/data
+      - ./secrets/tls:/run/tls:ro
+      - ./logs:/var/log/shs:rw
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  ocr:
+    profiles: [minimal, gpu]
+    image: ${OCR_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    environment:
+      OCR_CONFIG: /app/config/config.yaml
+    command: ["python", "-m", "doctr.cli", "server", "--config", "/app/config/config.yaml"]
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      test:
+        - CMD-SHELL
+        - "curl --fail --silent http://localhost:8080/healthz || exit 1"
+    volumes:
+      - ./services/ocr/config.yaml:/app/config/config.yaml:ro
+      - ./logs:/var/log/shs:rw
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  tei:
+    profiles: [minimal, gpu]
+    image: ${TEI_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    environment:
+      TEI_CONFIG: /app/config/config.yaml
+    command: ["/app/tei-server", "--config", "/app/config/config.yaml"]
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      test:
+        - CMD-SHELL
+        - "curl --fail --silent http://localhost:8081/readyz || exit 1"
+    volumes:
+      - ./services/tei/config.yaml:/app/config/config.yaml:ro
+      - ./logs:/var/log/shs:rw
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  reranker:
+    profiles: [minimal, gpu]
+    image: ${RERANKER_IMAGE}
+    restart: on-failure
+    user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
+    environment:
+      RERANKER_CONFIG: /app/config/config.yaml
+    command: ["/app/reranker-server", "--config", "/app/config/config.yaml"]
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      test:
+        - CMD-SHELL
+        - "curl --fail --silent http://localhost:8082/readyz || exit 1"
+    volumes:
+      - ./services/reranker/config.yaml:/app/config/config.yaml:ro
+      - ./logs:/var/log/shs:rw
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+  ollama:
+    profiles: [gpu]
+    image: ${OLLAMA_IMAGE}
+    restart: on-failure
+    runtime: nvidia
+    environment:
+      OLLAMA_HOST: 0.0.0.0
+      OLLAMA_ORIGINS: https://proxy:8443
+      CUDA_VISIBLE_DEVICES: all
+    devices:
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia0:/dev/nvidia0
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./logs:/var/log/shs:rw
+    cap_drop: ["ALL"]
+    networks: [shs_net]
+
+volumes:
+  pg_data: {}
+  minio_data: {}
+  n8n_data: {}
+  openwebui_data: {}
+  ollama_data: {}
+  logs: {}
+
+networks:
+  shs_net:
+    driver: bridge

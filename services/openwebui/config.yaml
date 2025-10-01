@@ -1,0 +1,16 @@
+server:
+  host: 0.0.0.0
+  port: 8080
+  ssl: false
+auth:
+  provider: local
+  allow_signup: false
+  allowed_origins:
+    - https://localhost:8443
+features:
+  telemetry: false
+  rag_vector_endpoint: https://proxy:8443/api/vector_query
+  sql_endpoint: https://proxy:8443/api/sql_query
+logging:
+  format: json
+  trace_header: X-Trace-Id

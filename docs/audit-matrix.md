@@ -1,0 +1,21 @@
+# SHS Compliance & Documentation Audit Matrix
+
+Bewertungsskala: 1 = ungeklärt, 3 = teilweise erfüllt, 5 = voll erfüllt (mit laufender Überwachung). Jeder Punkt referenziert die maßgeblichen Dokumente und beschreibt nächste Schritte zur weiteren Angleichung an SHS-Prinzipien und Branchenstandards.
+
+| Prinzip / Industriestandard | Score | Status | Primäre Nachweise | Nächste Schritte |
+| --- | --- | --- | --- | --- |
+| Local Execution & Offline Capability | 4/5 | Compose-Profile nutzen lokale Container, Ollama bleibt hostseitig; OFFLINE-Flag verhindert unerwünschte Ausgänge. | [`README.md`](../README.md), [`compose.yaml`](../compose.yaml) | Aufnahme eines wiederholbaren Smoke-Tests für `ollama serve` im Runbook ergänzen. |
+| TLS Everywhere & mTLS Upstream | 4/5 | Deterministische CA-Erzeugung, Proxy erzwingt HTTPS/mTLS; Fail-Closed bei fehlenden Zertifikaten. | [`SECURITY.md`](../SECURITY.md), [`proxy/Caddyfile`](../proxy/Caddyfile), [`scripts/tls/gen_local_ca.sh`](../scripts/tls/gen_local_ca.sh) | Automatisierte Zertifikatsintegritätsprüfung dem `make status` Output hinzufügen. |
+| GDPR / Data Minimization | 3/5 | SHA-256-Hashing, Soft-Delete-Spiegelung, strukturierte Logs; Lösch-Workflows dokumentiert. | [`README.md`](../README.md), [`n8n/init_flows.json`](../n8n/init_flows.json), [`db/policies.sql`](../db/policies.sql) | Ergänzung eines dokumentierten Data-Deletion-Playbooks im Runbook und Testsuite-Erweiterung für Löschfälle. |
+| Deterministic Artifacts & Version Pinning | 5/5 | `VERSIONS.lock`, `Makefile`-Guards, TLS-Reproduktion; Backup/Restore sichert deterministische Artefakte. | [`README.md`](../README.md), [`Makefile`](../Makefile), [`VERSIONS.lock`](../VERSIONS.lock) | Regelmäßige Review-Termine im Revision-Log verankern. |
+| Observability & Traceability | 4/5 | JSONL-Logs mit Trace-IDs, Status-Script listet Endpunkte/Versionen, Tests prüfen Log-Ausgaben. | [`README.md`](../README.md), [`scripts/status.sh`](../scripts/status.sh), [`tests/acceptance`](../tests/acceptance) | Ergänzung eines strukturierten Log-Schemas im docs-Verzeichnis. |
+| Fail-Closed & Resilience | 4/5 | Secrets/TLS-Prüfung vor Start, Healthchecks erzwingen Neustarts, Resilience-Testskript deckt Retries ab. | [`SECURITY.md`](../SECURITY.md), [`compose.yaml`](../compose.yaml), [`tests/acceptance/06_resilience.sh`](../tests/acceptance/06_resilience.sh) | Automatisierte Alarmierung (z. B. via n8n) bei wiederholtem Healthcheck-Fail definieren. |
+| Tooling Governance & Documentation Fusion | 4/5 | Dokumentationslandschaft (README, Runbook, Security, Architektur, Revision) referenziert sich gegenseitig; Audit-Matrix etabliert. | [`docs/architecture.md`](architecture.md), [`docs/revision-2025-09-28.md`](revision-2025-09-28.md), [`RUNBOOK.md`](../RUNBOOK.md) | Geplante Zusammenführung von Architektur- und Revisionsdokument in einer „Architecture & Roadmap“-Seite terminieren. |
+| Platform Parity (CPU/GPU/CI) | 3/5 | Wardrobe-Overlays und README-Profilbeschreibungen vorhanden, aber CI-Durchstiche noch ausstehend. | [`wardrobe/`](../wardrobe/), [`README.md`](../README.md) | Dokumentierte Testläufe je Overlay im Revision-Log erfassen. |
+| Promotion Discipline & Change Management | 3/5 | Promotion-Gates skizziert, Runbook referenziert STATE_VERIFICATION; placeholders in Stable/Entrance bestehen. | [`docs/revision-2025-09-28.md`](revision-2025-09-28.md), [`fundament/STATE_VERIFICATION.md`](../fundament/STATE_VERIFICATION.md) | Entscheidungsmatrix für Canary → Stable Promotion im Revision-Log ergänzen. |
+| Industry Alignment (TLS, Backups, Incident Response) | 4/5 | Runbook dokumentiert IR-Checklisten, Backup/Restore, TLS-Rotation; Security-Doc verankert Controls. | [`RUNBOOK.md`](../RUNBOOK.md), [`SECURITY.md`](../SECURITY.md) | Ergänzung eines regelmäßigen Restore-Drills in Runbook und Audit-Review. |
+
+## Bewertungsnotizen
+- Scores ≥4 gelten als produktionsnah; Bereiche ≤3 benötigen Nachweise oder automatisierte Kontrollen, bevor Stable-Freigaben erfolgen.
+- Fortschrittsupdates werden sowohl in [`docs/revision-2025-09-28.md`](revision-2025-09-28.md) als auch im README-Abschnitt „Change Management & Consolidation“ gepflegt.
+- Bei Änderungen an Kontrollen ist diese Matrix zeitgleich mit `SECURITY.md` zu aktualisieren, um die Dokumentation konsistent zu halten.
