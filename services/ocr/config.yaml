@@ -1,0 +1,14 @@
+service:
+  host: 0.0.0.0
+  port: 8080
+  log_level: info
+  trace_header: X-Trace-Id
+otp:
+  models:
+    text: doctr
+processing:
+  max_pages: 200
+  languages: [en, de]
+health:
+  path: /healthz
+  interval: 30

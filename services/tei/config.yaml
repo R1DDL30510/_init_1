@@ -1,0 +1,15 @@
+server:
+  host: 0.0.0.0
+  port: 8081
+  workers: 2
+  timeout: 30
+model:
+  name: BAAI/bge-small-en
+  revision: pinned
+  embedding_dimension: 384
+  cache_dir: /data/models
+tracing:
+  header: X-Trace-Id
+health:
+  ready_path: /readyz
+  live_path: /healthz

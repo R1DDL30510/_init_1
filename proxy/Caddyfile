@@ -1,0 +1,71 @@
+{
+  auto_https off
+  admin off
+  storage file_system /var/lib/caddy
+  ocsp_stapling off
+  servers {
+    protocol {
+      allow_h2c false
+    }
+  }
+}
+
+https://{$SHS_DOMAIN}:8443 {
+  tls {
+    cert_file /etc/caddy/tls/leaf.pem
+    key_file /etc/caddy/tls/leaf.key
+    client_auth {
+      mode require_and_verify
+      trusted_ca_cert_file /etc/caddy/tls/ca.crt
+    }
+  }
+
+  encode zstd gzip
+
+  @lan remote_ip {$LAN_ALLOWLIST}
+  handle @lan {
+    header {
+      Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+      Content-Security-Policy "default-src 'self'; script-src 'self'; object-src 'none'; connect-src 'self'"
+      X-Content-Type-Options "nosniff"
+      X-Frame-Options "DENY"
+      Referrer-Policy "no-referrer"
+      Permissions-Policy "geolocation=(), microphone=(), camera=()"
+      Access-Control-Allow-Origin "https://{$SHS_DOMAIN}:8443"
+      Access-Control-Allow-Methods "GET, POST, OPTIONS"
+      Access-Control-Allow-Headers "Content-Type, Authorization, X-Trace-Id"
+      Access-Control-Max-Age "600"
+    }
+
+    @health path /healthz /readyz
+    respond @health 200 {
+      body {"status":"ok","trace_id":"{http.request.header.X-Trace-Id}"}
+      close
+    }
+
+    reverse_proxy /ui/* openwebui:8080 {
+      header_up X-Trace-Id {http.request.header.X-Trace-Id}
+    }
+
+    reverse_proxy /api/workflow/* n8n:5678 {
+      header_up X-Trace-Id {http.request.header.X-Trace-Id}
+    }
+
+    reverse_proxy /api/vector_query tei:8081 {
+      header_up X-Trace-Id {http.request.header.X-Trace-Id}
+    }
+
+    reverse_proxy /api/rerank reranker:8082 {
+      header_up X-Trace-Id {http.request.header.X-Trace-Id}
+    }
+  }
+
+  handle {
+    respond 403 {"error":"lan_denied"}
+  }
+
+  log {
+    output file /var/log/shs/proxy.log
+    format json
+  }
+}
