@@ -24,11 +24,12 @@ RUN apt-get update \
 # Download architecture-specific Codex binary from the official GitHub release.
 RUN set -eux; \
     case "${TARGETARCH}" in \
-      "arm64") COD_ARCH="aarch64-unknown-linux-musl" ;; \
-      "amd64") COD_ARCH="x86_64-unknown-linux-musl" ;; \
+      "arm64") COD_ARCH="aarch64-unknown-linux-musl"; COD_SHA256="2bb5ac86c3e026898b23cf8183635aece0eb0f18973e01f8d6c0d5af6eaeb7d7" ;; \
+      "amd64") COD_ARCH="x86_64-unknown-linux-musl"; COD_SHA256="38ad77db75aa05f6eb60ddd43ea3fd7b9a1ef15a137f02e38b519a93a5990084" ;; \
       *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
     esac; \
     curl -fsSL -o /tmp/codex.tar.gz "https://github.com/openai/codex/releases/download/${CODEX_VERSION}/codex-${COD_ARCH}.tar.gz"; \
+    echo "${COD_SHA256}  /tmp/codex.tar.gz" | sha256sum -c -; \
     tar -xzf /tmp/codex.tar.gz -C /tmp; \
     install -m 0755 "/tmp/codex-${COD_ARCH}" /usr/local/bin/codex; \
     rm -rf /tmp/codex.tar.gz "/tmp/codex-${COD_ARCH}"

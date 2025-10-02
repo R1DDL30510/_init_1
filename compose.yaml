@@ -22,7 +22,7 @@ services:
     volumes:
       - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./secrets/tls:/etc/caddy/tls:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/proxy:/var/log/shs:rw
     read_only: true
     tmpfs:
       - /tmp
@@ -49,7 +49,7 @@ services:
     volumes:
       - openwebui_data:/var/lib/open-webui
       - ./services/openwebui/config.yaml:/app/config/config.yaml:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/openwebui:/var/log/shs:rw
     depends_on:
       proxy:
         condition: service_started
@@ -85,7 +85,7 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n/init_flows.json:/docker-entrypoint-init.d/init_flows.json:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/n8n:/var/log/shs:rw
     depends_on:
       postgres:
         condition: service_healthy
@@ -116,7 +116,7 @@ services:
       - pg_data:/var/lib/postgresql/data
       - ./db/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
       - ./db/policies.sql:/docker-entrypoint-initdb.d/20-policies.sql:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/postgres:/var/log/shs:rw
     cap_drop: ["ALL"]
     networks: [shs_net]
 
@@ -141,7 +141,7 @@ services:
     volumes:
       - minio_data:/data
       - ./secrets/tls:/run/tls:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/minio:/var/log/shs:rw
     cap_drop: ["ALL"]
     networks: [shs_net]
 
@@ -162,7 +162,7 @@ services:
         - "curl --fail --silent http://localhost:8080/healthz || exit 1"
     volumes:
       - ./services/ocr/config.yaml:/app/config/config.yaml:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/ocr:/var/log/shs:rw
     cap_drop: ["ALL"]
     networks: [shs_net]
 
@@ -183,7 +183,7 @@ services:
         - "curl --fail --silent http://localhost:8081/readyz || exit 1"
     volumes:
       - ./services/tei/config.yaml:/app/config/config.yaml:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/tei:/var/log/shs:rw
     cap_drop: ["ALL"]
     networks: [shs_net]
 
@@ -204,7 +204,7 @@ services:
         - "curl --fail --silent http://localhost:8082/readyz || exit 1"
     volumes:
       - ./services/reranker/config.yaml:/app/config/config.yaml:ro
-      - ./logs:/var/log/shs:rw
+      - ./logs/reranker:/var/log/shs:rw
     cap_drop: ["ALL"]
     networks: [shs_net]
 
@@ -224,7 +224,7 @@ services:
       - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
     volumes:
       - ollama_data:/root/.ollama
-      - ./logs:/var/log/shs:rw
+      - ./logs/ollama:/var/log/shs:rw
     cap_drop: ["ALL"]
     networks: [shs_net]
 
@@ -234,7 +234,6 @@ volumes:
   n8n_data: {}
   openwebui_data: {}
   ollama_data: {}
-  logs: {}
 
 networks:
   shs_net:

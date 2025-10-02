@@ -14,7 +14,7 @@ This compendium guides reviewers, operators, and new contributors through the en
 | [4. Entrance](#4-entrance-canary-control) | Canary gating, telemetry prep, promotion decision flows. | [`entrance/`](../entrance/) |
 | [5. Stable](#5-stable-production-ready) | Production rollout skeletons, monitoring plans. | [`stable/`](../stable/) |
 | [6. Governance](#6-governance-and-controls) | Security controls, audit mapping, promotion checklists. | [`docs/pre-release-audit.md`](pre-release-audit.md) |
-| [7. Library Enablement](#7-library-enable-the-knowledge-base) | Knowledge-base taxonomy, ingestion workflow, stewardship. | (Planned) [`docs/library-schema.md`](library-schema.md) |
+| [7. Library Enablement](#7-library-enable-the-knowledge-base) | Knowledge-base taxonomy, ingestion workflow, stewardship. | [`docs/library-schema.md`](library-schema.md) |
 | [Appendix](#appendix-deep-dives--artifacts) | Evidence repositories, diagrams, future briefs. | Multiple |
 
 ## 0. Orientation
@@ -87,7 +87,7 @@ This compendium guides reviewers, operators, and new contributors through the en
 - Ensure all gating actions from Section 4 of the audit are tracked as checklist items with owners.
 
 ## 7. Library: Enable the Knowledge Base
-- Draft the knowledge-base taxonomy and ingestion workflow in [`docs/library-schema.md`](library-schema.md) (GA-07).
+- Draft the knowledge-base taxonomy and ingestion workflow in [`docs/library-schema.md`](library-schema.md); current content is a guarded stub. : Bitte durch Operator verifizieren!
 - Mirror curator roles and review cadence in [`RUNBOOK.md`](../RUNBOOK.md#knowledge-base-operations) once available.
 - Capture dependencies between library assets and service overlays in the future house-governance blueprint.
 
