@@ -40,7 +40,7 @@ This runbook is the operational companion to the repository atlas in [`README.md
 | Status summary | `make status` | Calls `scripts/status.sh` to report HTTPS endpoints, enabled profiles, health probes, and TLS fingerprint validation. |
 | Acceptance suite | `make test` | Runs all scripts under `tests/acceptance/` with trace-aware JSON logging. |
 | Rotate CA | `make ca.rotate` | Forces deterministic regeneration of CA/leaf materials; rerun `make up` afterwards. |
-| Backup | `make backup` | Produces `backups/shs-<timestamp>.tar.zst` containing TLS, logs, versions, and a Postgres dump. |
+| Backup | `make backup` | Produces `backups/shs-<timestamp>.tar.zst.age` (encrypted with `age`) containing TLS, logs, versions, and a Postgres dump. |
 | Restore | `make restore ARCHIVE=...` | Stops services, restores archive content, and replays database dump. |
 | Clean | `make clean` | Removes generated TLS assets, logs, backups, and the local env file. |
 
@@ -63,9 +63,13 @@ This runbook is the operational companion to the repository atlas in [`README.md
 
 ## Backup & Restore Procedures
 1. Ensure services are healthy (`make status`).
-2. Run `make backup` and store the resulting archive offline.
-3. For restoration, provide the archive path: `make restore ARCHIVE=backups/shs-<timestamp>.tar.zst`.
-4. After restore, execute `make up` followed by `make status` to confirm certificates, digests, and health checks align with `README.md` expectations.
+2. Stage encryption material:
+    - Populate either `BACKUP_AGE_RECIPIENTS` (comma-separated recipient public keys) or `BACKUP_AGE_RECIPIENTS_FILE` (newline-delimited recipients) in `.env.local`.
+    - Provide the matching private key via `BACKUP_AGE_IDENTITIES` or `BACKUP_AGE_IDENTITIES_FILE`. Store the identity file outside the repository and reference it with an absolute path.
+    - Ensure the `age` CLI is installed on the host running the scripts.
+3. Run `make backup` and store the resulting `backups/shs-<timestamp>.tar.zst.age` offline.
+4. For restoration, pass the encrypted archive path: `make restore ARCHIVE=backups/shs-<timestamp>.tar.zst.age`. The script decrypts with `age` automatically when the identity variables are present.
+5. After restore, execute `make up` followed by `make status` to confirm certificates, digests, and health checks align with `README.md` expectations.
 
 ## Incident Response Checklist
 - Immediately restrict access by tightening `LAN_ALLOWLIST` in `.env.local` and re-running `make up`.
