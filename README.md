@@ -65,6 +65,7 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
     ```bash
     make up
     ```
+    To add GPU overlays, run `PROFILE=minimal,gpu make up` once the host has the NVIDIA container runtime.
 6. Inspect live status and health:
     ```bash
     make status

@@ -8,6 +8,9 @@
     }
   },
   "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/workspace,consistency=cached",
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
   "containerEnv": {
     "DOCKER_BUILDKIT": "1"
   },

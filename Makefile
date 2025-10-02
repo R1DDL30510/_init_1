@@ -9,6 +9,7 @@ TLS_DIR := $(ROOT)/secrets/tls
 LOG_FILE := $(ROOT)/logs/shs.jsonl
 ACCEPTANCE := $(ROOT)/tests/acceptance
 VALIDATE_WORKSPACE := $(ROOT)/scripts/validate_workspace.sh
+PROFILE ?= minimal
 
 .PHONY: bootstrap
 bootstrap:
@@ -25,12 +26,12 @@ bootstrap:
 .PHONY: up
 up: guard-secrets
 	@bash $(VALIDATE_WORKSPACE)
-	docker compose --env-file $(ENV_FILE) up -d --remove-orphans
+	COMPOSE_PROFILES=$(PROFILE) docker compose --env-file $(ENV_FILE) up -d --remove-orphans
 	$(MAKE) status
 
 .PHONY: down
 down:
-	docker compose --env-file $(ENV_FILE) down --remove-orphans
+	COMPOSE_PROFILES=$(PROFILE) docker compose --env-file $(ENV_FILE) down --remove-orphans
 
 .PHONY: test
 test:
