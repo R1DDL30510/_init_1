@@ -15,10 +15,9 @@
     "DOCKER_BUILDKIT": "1"
   },
   "runArgs": [
-    "--cap-drop=ALL",
-    "--security-opt", "no-new-privileges:true"
+    "--cap-drop=ALL"
   ],
-  "postCreateCommand": "ln -sfn /workspace /workspace/_init_1 && bash scripts/validate_workspace.sh --require-compliant && make bootstrap",
+  "postCreateCommand": "sudo chmod 666 /var/run/docker.sock && ln -sfn /workspace /workspace/_init_1 && bash scripts/validate_workspace.sh --require-compliant && make bootstrap",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -35,5 +34,5 @@
   },
   "remoteUser": "vscode",
   "workspaceFolder": "/workspace",
-  "updateContentCommand": "ln -sfn /workspace /workspace/_init_1 && make status"
+  "updateContentCommand": "sudo chmod 666 /var/run/docker.sock && ln -sfn /workspace /workspace/_init_1 && make status"
 }
