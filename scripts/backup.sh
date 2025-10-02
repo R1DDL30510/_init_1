@@ -20,6 +20,7 @@ fi
 mkdir -p "${BACKUP_DIR}"
 ARCHIVE="${BACKUP_DIR}/shs-${STAMP}.tar.zst"
 
+# shellcheck source=/dev/null
 source "${ENV_FILE}"
 
 cat <<JSON >> "${ROOT}/logs/shs.jsonl"

@@ -6,11 +6,30 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
-COMPOSE_FILE="${REPO_ROOT}/basement/toolbox/docker-compose.draft.yml"
+DEFAULT_COMPOSE_FILE="${REPO_ROOT}/basement/toolbox/docker-compose.draft.yml"
+COMPOSE_FILE="${GCODEX_COMPOSE_FILE:-${DEFAULT_COMPOSE_FILE}}"
+SERVICE_NAME="${GCODEX_SERVICE_NAME:-codex-cli}"
 SHARED_DIR="${REPO_ROOT}/basement/toolbox/shared"
 
 if [[ ! -f "${COMPOSE_FILE}" ]]; then
-  echo "[gcodex] compose file not found: ${COMPOSE_FILE}" >&2
+  cat <<EOF >&2
+[gcodex] compose file not found: ${COMPOSE_FILE}
+[gcodex] Export GCODEX_COMPOSE_FILE=/path/to/compose.yaml to target a different stack.
+[gcodex] See basement/toolbox/README.md for guidance on cloning or disabling the draft compose profile.
+EOF
+  exit 1
+fi
+
+if ! docker compose -f "${COMPOSE_FILE}" config --services >/dev/null 2>&1; then
+  echo "[gcodex] unable to parse compose file: ${COMPOSE_FILE}" >&2
+  exit 1
+fi
+
+if ! docker compose -f "${COMPOSE_FILE}" config --services | grep -qx "${SERVICE_NAME}"; then
+  cat <<EOF >&2
+[gcodex] service "${SERVICE_NAME}" not defined in ${COMPOSE_FILE}.
+[gcodex] Override with GCODEX_SERVICE_NAME=<service> or update the compose draft.
+EOF
   exit 1
 fi
 
@@ -32,4 +51,4 @@ fi
 exec docker compose -f "${COMPOSE_FILE}" run --rm "${TTY_FLAGS[@]}" \
   --name "${SESSION_NAME}" \
   --workdir /workspace \
-  codex-cli "${CMD[@]}"
+  "${SERVICE_NAME}" "${CMD[@]}"

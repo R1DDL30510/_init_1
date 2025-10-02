@@ -1,4 +1,3 @@
-
 services:
   proxy:
     profiles: [minimal, gpu]

@@ -6,4 +6,5 @@ ingest/
 logs/shs.jsonl
 logs/*.log
 __pycache__/
+.obsidian/
 .DS_Store

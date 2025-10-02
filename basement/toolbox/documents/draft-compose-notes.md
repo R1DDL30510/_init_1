@@ -23,7 +23,7 @@ Dieser Entwurf dient als spätere Vorlage für die `docker-compose.yml`, sobald 
 
 ## Statusübersicht
 - **Verifiziert**
-  - `codex-cli` Build über `docker compose -f basement/toolbox/docker-compose.draft.yml build codex-cli`.
+  - `codex-cli` Build über `docker compose -f basement/toolbox/docker-compose.draft.yml build codex-cli` (Datei liegt im Repo und wird von `bin/gcodex` verwendet).
   - Zugriff auf Host-Ollama (`OLLAMA_HOST=http://host.docker.internal:11434`) durch `bin/gcodex`.
 - **Zu verifizieren**
   - Endgültige Compose-Policies (Netzwerke, Volumes, Profiles).

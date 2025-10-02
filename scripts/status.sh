@@ -56,6 +56,7 @@ read_expected_fingerprint() {
 
 if [[ -f "${ENV_FILE}" ]]; then
   set -a
+  # shellcheck source=/dev/null
   source "${ENV_FILE}"
   set +a
 else

@@ -1,0 +1,59 @@
+name: Lint
+
+on:
+  push:
+    branches: ["main", "master", "develop", "dev"]
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Run shellcheck
+        run: |
+          set -euo pipefail
+          shopt -s nullglob globstar
+          files=(scripts/*.sh scripts/**/*.sh basement/toolbox/bin/gcodex)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No shell scripts detected"
+            exit 0
+          fi
+          shellcheck "${files[@]}"
+  yamllint:
+    name: Yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y yamllint
+      - name: Run yamllint
+        run: |
+          set -euo pipefail
+          yamllint .
+  secret-guard:
+    name: Secret Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Ensure no secrets tracked
+        run: |
+          set -euo pipefail
+          if git ls-files 'secrets/*' 2>/dev/null | grep -q .; then
+            echo "Secret material is tracked:"
+            git ls-files 'secrets/*'
+            exit 1
+          fi
+          if git ls-files '*.env' 2>/dev/null | grep -q .; then
+            echo "Environment files with secrets are tracked:"
+            git ls-files '*.env'
+            exit 1
+          fi
+          echo "No tracked secret files detected."

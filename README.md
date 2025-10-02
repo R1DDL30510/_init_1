@@ -21,7 +21,7 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
 ## Wayfinding & Documentation Legend
 - **Start Here:** [`docs/project-compendium.md`](docs/project-compendium.md) — whole-house presentation with chapter legend, personas, and direct links into each layer.
 - **Audit Readiness:** [`docs/pre-release-audit.md`](docs/pre-release-audit.md) — mapped controls, findings, and gating actions for Wardrobe → Entrance promotion (confidence 0.99).
-- **Governance Blueprint:** Upcoming [`docs/house-governance.md`](docs/house-governance.md) will host dependency matrices; until then leverage the compendium and architecture guide.
+- **Governance Blueprint:** [`docs/house-governance.md`](docs/house-governance.md) tracks dependency matrices and promotion approvals across house layers.
 - **Quote & Commentary:** Maintain inline quotes and call-outs across documentation to keep the narrative aligned with promotion discipline.
 
 ## Repository Atlas
@@ -45,6 +45,8 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
 - [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md): living snapshot of open planning tasks across layers, including promotion discipline updates (GA-04).
 - [`docs/audit-matrix.md`](docs/audit-matrix.md): consolidated scoring of compliance against SHS strategic principles and broader industry standards (TLS, GDPR, observability, reproducibility).
 - [`docs/pre-release-audit.md`](docs/pre-release-audit.md): pre-release audit (PoC confidence 0.99) summarizing evidence, gaps, and gating actions for Wardrobe → Entrance promotion with cross-links to the compendium legend.
+- [`docs/house-governance.md`](docs/house-governance.md): dependency matrices, ownership assignments, and promotion approvals for each layer (currently stubbed with next actions).
+- [`docs/runbook-ga-02-delete-playbook.md`](docs/runbook-ga-02-delete-playbook.md): appendix for the GA-02 delete rehearsal (stub; populate after the next drill).
 
 ## Operational Reference
 ### Quickstart
@@ -73,6 +75,15 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
     ```bash
     docker compose --env-file .env.local --profile gpu up -d
     ```
+
+### Toolbox & `gcodex`
+- The Toolbox compose draft (`basement/toolbox/docker-compose.draft.yml`) provides an isolated shell for Codex experimentation against a host-provided Ollama endpoint. Guardrails mirror the main stack (read-only volume, deterministic image pins).
+- Launch the helper script once `ollama serve` is running on the host:
+    ```bash
+    ./basement/toolbox/bin/gcodex
+    ```
+- Pass additional flags directly to the Codex CLI, for example `./basement/toolbox/bin/gcodex --version`.
+- If the draft compose file is unavailable, the script explains how to target the main `compose.yaml` or disable the helper; see [`basement/toolbox/README.md`](basement/toolbox/README.md) for override instructions.
 
 ### Environment Variables
 Review `.env.example` for the full catalog; key highlights include:

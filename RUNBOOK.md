@@ -44,6 +44,12 @@ This runbook is the operational companion to the repository atlas in [`README.md
 | Restore | `make restore ARCHIVE=...` | Stops services, restores archive content, and replays database dump. |
 | Clean | `make clean` | Removes generated TLS assets, logs, backups, and the local env file. |
 
+## Service Configuration Reference
+- `services/ocr/config.yaml`: Controls the OCR microservice (`host`, `port`, trace header, supported languages, and Doctr model pin). Tune `processing.max_pages` cautiously to maintain deterministic resource usage.
+- `services/tei/config.yaml`: TEI embeddings server (`BAAI/bge-small-en`), worker count, timeout, and trace header alignment. Ensure revisions remain synchronized with `VERSIONS.lock` before regenerating embeddings.
+- `services/reranker/config.yaml`: Semantic reranker profile with top-K scoring limit (`BAAI/bge-reranker-base`). Adjustments should land alongside acceptance-test updates.
+- `openwebui/` and other service directories inherit configuration from `.env.local`; document overrides in `docs/project-compendium.md` when introducing new keys.
+
 ## Acceptance Testing
 - Follow the execution order defined in `tests/acceptance/*.sh`; each script logs to `logs/shs.jsonl` with a dedicated `trace_id`.
 - The suite asserts TLS-only proxy availability, ingest idempotency, semantic retrieval with ≥3 citations, SQL accuracy, sync reconciliation, and resilience retry paths.
