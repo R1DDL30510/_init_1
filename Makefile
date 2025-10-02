@@ -8,9 +8,11 @@ ENV_FILE := $(ROOT)/.env.local
 TLS_DIR := $(ROOT)/secrets/tls
 LOG_FILE := $(ROOT)/logs/shs.jsonl
 ACCEPTANCE := $(ROOT)/tests/acceptance
+VALIDATE_WORKSPACE := $(ROOT)/scripts/validate_workspace.sh
 
 .PHONY: bootstrap
 bootstrap:
+	@bash $(VALIDATE_WORKSPACE)
 	mkdir -p $(TLS_DIR) logs ingest
 	test -f $(ENV_FILE) || { cp $(ROOT)/.env.example $(ENV_FILE) && echo "Created $(ENV_FILE)."; }
 	chmod 600 $(ENV_FILE)
@@ -22,6 +24,7 @@ bootstrap:
 
 .PHONY: up
 up: guard-secrets
+	@bash $(VALIDATE_WORKSPACE)
 	docker compose --env-file $(ENV_FILE) up -d --remove-orphans
 	$(MAKE) status
 
@@ -31,6 +34,7 @@ down:
 
 .PHONY: test
 test:
+	@bash $(VALIDATE_WORKSPACE)
 	@set -euo pipefail
 	@mkdir -p $(dir $(LOG_FILE))
 	@if [ ! -f $(LOG_FILE) ]; then \
@@ -47,10 +51,12 @@ test:
 
 .PHONY: backup
 backup: guard-secrets
+	@bash $(VALIDATE_WORKSPACE)
 	bash $(ROOT)/scripts/backup.sh
 
 .PHONY: restore
 restore: guard-secrets
+	@bash $(VALIDATE_WORKSPACE)
 	@if [ -z "$(ARCHIVE)" ]; then \
 		echo "Set ARCHIVE=/path/to/archive" >&2; \
 		exit 1; \
@@ -71,7 +77,12 @@ clean:
 
 .PHONY: status
 status:
+	@bash $(VALIDATE_WORKSPACE)
 	bash $(ROOT)/scripts/status.sh
+
+.PHONY: check-digests
+check-digests:
+	@bash $(ROOT)/scripts/status.sh --suppress-log --check-digests
 
 .PHONY: guard-secrets
 guard-secrets:

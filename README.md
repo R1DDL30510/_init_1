@@ -50,21 +50,22 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
 
 ## Operational Reference
 ### Quickstart
-1. Copy the environment template and set secrets locally:
+1. Open the repository via the sanitized helper alias (e.g. `~/Desktop/ShS/init_1`) so Docker volume names stay compliant; `scripts/validate_workspace.sh` enforces the requirement before Dev Container bootstrap (`scripts/validate_workspace.sh:1`).
+2. Copy the environment template and set secrets locally:
     ```bash
     cp .env.example .env.local
     sed -i 's/***FILL***/<value>/g' .env.local
     ```
-2. Bootstrap directories, TLS assets, and guardrails:
+3. Bootstrap directories, TLS assets, and guardrails:
     ```bash
     make bootstrap
     ```
-3. Update `VERSIONS.lock` with verified image digests and model revisions (private GHCR services included).
-4. Launch the stack (defaults to the `minimal` profile):
+4. Update `VERSIONS.lock` with verified image digests and model revisions (private GHCR services included).
+5. Launch the stack (defaults to the `minimal` profile):
     ```bash
     make up
     ```
-5. Inspect live status and health:
+6. Inspect live status and health:
     ```bash
     make status
     ```

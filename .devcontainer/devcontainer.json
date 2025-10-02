@@ -8,7 +8,7 @@
     }
   },
   "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder},target=/workspace/_init_1,type=bind,consistency=cached"
   ],
   "containerEnv": {
     "DOCKER_BUILDKIT": "1"
@@ -17,7 +17,7 @@
     "--cap-drop=ALL",
     "--security-opt", "no-new-privileges:true"
   ],
-  "postCreateCommand": "make bootstrap",
+  "postCreateCommand": "bash scripts/validate_workspace.sh --require-compliant && make bootstrap",
   "customizations": {
     "vscode": {
       "extensions": [

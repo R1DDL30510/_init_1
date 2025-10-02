@@ -8,6 +8,7 @@ This runbook is the operational companion to the repository atlas in [`README.md
 - Local secrets populated in `.env.local` using `.env.example` as a template; never commit credentials.
 
 ## Bootstrap Checklist
+- [ ] Enter the repository through the sanitized helper alias (for example `~/Desktop/ShS/init_1`) so Docker volume names remain valid; `scripts/validate_workspace.sh` enforces the guardrail for Dev Containers (`scripts/validate_workspace.sh:1`).
 - [ ] Launch the Dev Container (`.devcontainer/devcontainer.json`) or prepare equivalent host tooling.
 - [ ] Review `.env.example` and pre-stage required secrets so the subsequent bootstrap can copy them into `.env.local`.
 - [ ] Execute `make bootstrap` to automatically:
@@ -70,6 +71,9 @@ This runbook is the operational companion to the repository atlas in [`README.md
 3. Run `make backup` and store the resulting `backups/shs-<timestamp>.tar.zst.age` offline.
 4. For restoration, pass the encrypted archive path: `make restore ARCHIVE=backups/shs-<timestamp>.tar.zst.age`. The script decrypts with `age` automatically when the identity variables are present.
 5. After restore, execute `make up` followed by `make status` to confirm certificates, digests, and health checks align with `README.md` expectations.
+
+## Volume Governance
+- Revisit Docker-managed volumes (`pg_data`, `minio_data`, `n8n_data`, `openwebui_data`, `ollama_data`) every quarter and migrate critical data stores to bind mounts when retention or audit requirements demand repository-resident artifacts (`compose.yaml:231`). Log the review outcome alongside backup evidence so promotion gates capture storage decisions.
 
 ## Incident Response Checklist
 - Immediately restrict access by tightening `LAN_ALLOWLIST` in `.env.local` and re-running `make up`.

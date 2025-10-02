@@ -6,6 +6,42 @@ ENV_FILE="${ROOT}/.env.local"
 VERSIONS="${ROOT}/VERSIONS.lock"
 TLS_DIR="${ROOT}/secrets/tls"
 
+CHECK_DIGESTS=0
+SUPPRESS_LOG=0
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [--check-digests] [--suppress-log]
+
+Options:
+  --check-digests   verify *_IMAGE digest pins against VERSIONS.lock and fail on drift
+  --suppress-log    skip writing to logs/shs.jsonl (useful for CI/pre-commit checks)
+  --help            display this help message
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --check-digests)
+      CHECK_DIGESTS=1
+      shift
+      ;;
+    --suppress-log)
+      SUPPRESS_LOG=1
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'Unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
 normalize_fingerprint() {
   local value="${1:-}"
   value="$(printf '%s' "${value}" | tr -d '[:space:]:-' | tr '[:lower:]' '[:upper:]')"
@@ -67,9 +103,12 @@ DOMAIN="${SHS_DOMAIN:-localhost}"
 BASE_URL="https://${DOMAIN}:${SHS_PROXY_PORT:-8443}"
 TRACE_ID="status-$(date -u +%Y-%m-%dT%H-%M-%SZ)"
 
-cat <<JSON >> "${ROOT}/logs/shs.jsonl"
+if [[ "${SUPPRESS_LOG}" -eq 0 ]]; then
+  mkdir -p "${ROOT}/logs"
+  cat <<JSON >> "${ROOT}/logs/shs.jsonl"
 {"trace_id":"${TRACE_ID}","event":"status.run","domain":"${DOMAIN}"}
 JSON
+fi
 
 VERSIONS_CONTENT=""
 if [[ -f "${VERSIONS}" ]]; then
@@ -143,4 +182,135 @@ else
   else
     echo "  - Unable to read fingerprint from ${LEAF_CERT}"
   fi
+fi
+
+declare -a SERVICE_PAIRS=()
+
+if [[ -f "${VERSIONS}" ]]; then
+  while IFS= read -r pair; do
+    [[ -z "${pair}" ]] && continue
+    SERVICE_PAIRS+=("${pair}")
+  done < <(VERSIONS_PATH="${VERSIONS}" python3 <<'PY'
+import os
+import re
+
+versions_path = os.environ['VERSIONS_PATH']
+pairs = []
+in_services = False
+current = None
+digest_pattern = re.compile(r'digest:\s*"?(sha256:[0-9a-f]+)"?')
+
+with open(versions_path, 'r', encoding='utf-8') as fh:
+    for raw_line in fh:
+        line = raw_line.rstrip('\n')
+        stripped = line.strip()
+        if stripped == 'services:':
+            in_services = True
+            current = None
+            continue
+
+        if not line.startswith(' '):
+            in_services = False
+            current = None
+            continue
+
+        if not in_services:
+            continue
+
+        if line.startswith('  ') and not line.startswith('    '):
+            current = stripped.rstrip(':')
+            continue
+
+        if current is None:
+            continue
+
+        match = digest_pattern.search(line)
+        if match:
+            pairs.append(f"{current}|{match.group(1)}")
+            current = None
+
+print('\n'.join(pairs))
+PY
+)
+fi
+
+verify_digests() {
+  if [[ ! -f "${VERSIONS}" ]]; then
+    echo "Digest verification: VERSIONS.lock missing" >&2
+    return 1
+  fi
+
+  if [[ ${#SERVICE_PAIRS[@]} -eq 0 ]]; then
+    echo "Digest verification: no services detected in VERSIONS.lock" >&2
+    return 1
+  fi
+
+  local failure=0
+  local -a env_files=("${ROOT}/.env.example")
+  if [[ -f "${ENV_FILE}" ]]; then
+    env_files+=("${ENV_FILE}")
+  fi
+
+  echo "Digest verification:"
+
+  for env_file in "${env_files[@]}"; do
+    if [[ ! -f "${env_file}" ]]; then
+      echo "  - ${env_file}: missing"
+      failure=1
+      continue
+    fi
+
+    local -a issues=()
+    for pair in "${SERVICE_PAIRS[@]}"; do
+      local service="${pair%%|*}"
+      local digest="${pair#*|}"
+      local env_var="$(echo "${service}" | tr '[:lower:]-' '[:upper:]_')_IMAGE"
+      local line
+      line="$(grep -E "^${env_var}=" "${env_file}" | head -n1 || true)"
+
+      if [[ -z "${line}" ]]; then
+        issues+=("${env_var} missing")
+        continue
+      fi
+
+      local value="${line%%#*}"
+      value="${value#${env_var}=}"
+      local trimmed="$(printf '%s' "${value}" | tr -d '[:space:]')"
+      if [[ "${trimmed}" != *@* ]]; then
+        issues+=("${env_var} missing digest pin (expected @${digest})")
+        continue
+      fi
+
+      local observed="${trimmed##*@}"
+      if [[ "${observed}" != "${digest}" ]]; then
+        issues+=("${env_var} digest drift (expected ${digest}, saw ${observed})")
+      fi
+    done
+
+    if [[ ${#issues[@]} -eq 0 ]]; then
+      echo "  - ${env_file}: OK"
+    else
+      failure=1
+      echo "  - ${env_file}:"
+      for issue in "${issues[@]}"; do
+        echo "      * ${issue}"
+      done
+    fi
+  done
+
+  if [[ ${failure} -ne 0 ]]; then
+    return 1
+  fi
+
+  return 0
+}
+
+if verify_digests; then
+  DIGEST_STATUS=0
+else
+  DIGEST_STATUS=1
+fi
+
+if [[ ${CHECK_DIGESTS} -eq 1 ]]; then
+  exit ${DIGEST_STATUS}
 fi
