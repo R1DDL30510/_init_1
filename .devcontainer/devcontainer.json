@@ -7,9 +7,7 @@
       "moby": false
     }
   },
-  "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace/_init_1,type=bind,consistency=cached"
-  ],
+  "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/workspace/_init_1,consistency=cached",
   "containerEnv": {
     "DOCKER_BUILDKIT": "1"
   },
