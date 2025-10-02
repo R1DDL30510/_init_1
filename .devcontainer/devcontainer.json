@@ -7,7 +7,7 @@
       "moby": false
     }
   },
-  "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/workspace/_init_1,consistency=cached",
+  "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/workspace,consistency=cached",
   "containerEnv": {
     "DOCKER_BUILDKIT": "1"
   },
@@ -15,7 +15,7 @@
     "--cap-drop=ALL",
     "--security-opt", "no-new-privileges:true"
   ],
-  "postCreateCommand": "bash scripts/validate_workspace.sh --require-compliant && make bootstrap",
+  "postCreateCommand": "ln -sfn /workspace /workspace/_init_1 && bash scripts/validate_workspace.sh --require-compliant && make bootstrap",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -31,6 +31,6 @@
     }
   },
   "remoteUser": "vscode",
-  "workspaceFolder": "/workspace/_init_1",
-  "updateContentCommand": "make status"
+  "workspaceFolder": "/workspace",
+  "updateContentCommand": "ln -sfn /workspace /workspace/_init_1 && make status"
 }
