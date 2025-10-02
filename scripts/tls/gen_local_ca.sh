@@ -5,7 +5,6 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TLS_DIR="${ROOT}/secrets/tls"
 DOMAIN="${SHS_DOMAIN:-localhost}"
 MODE="${TLS_MODE:-local-ca}"
-BASE="${SHS_BASE:-${ROOT}}"
 
 if [[ "${MODE}" != "local-ca" ]]; then
   echo "Unsupported TLS_MODE=${MODE}" >&2

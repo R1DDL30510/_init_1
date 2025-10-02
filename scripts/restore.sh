@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT}/.env.local"
-BACKUP_DIR="${ROOT}/backups"
 TRACE_ID="restore-$(date -u +%Y-%m-%dT%H-%M-%SZ)"
 
 if [[ $# -ne 1 ]]; then
@@ -20,6 +19,7 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 1
 fi
 
+# shellcheck source=/dev/null
 source "${ENV_FILE}"
 
 TEMP_DIR="$(mktemp -d)"
@@ -49,7 +49,7 @@ if [[ -d "${TEMP_DIR}/minio-backup" ]]; then
   fi
 fi
 
-SQL_ZST=$(ls "${TEMP_DIR}"/postgres-*.sql.zst | head -n1)
+SQL_ZST="$(find "${TEMP_DIR}" -maxdepth 1 -type f -name 'postgres-*.sql.zst' -print -quit)"
 if [ -z "${SQL_ZST}" ]; then
   echo "${TRACE_ID} missing postgres dump" >&2
   exit 1
