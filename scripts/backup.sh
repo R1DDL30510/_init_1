@@ -33,9 +33,12 @@ tar --sort=name --mtime="${STAMP}" --owner=0 --group=0 --numeric-owner \
   -C "${BACKUP_DIR}" "postgres-${STAMP}.sql.zst"
 
 if docker compose --env-file "${ENV_FILE}" exec -T minio which mc >/dev/null 2>&1; then
+  MINIO_STAGE="$(mktemp -d)"
   docker compose --env-file "${ENV_FILE}" exec -T minio /bin/sh -c "mc alias set local https://minio:9000 \"${MINIO_ROOT_USER}\" \"${MINIO_ROOT_PASSWORD}\" --api s3v4 && mc mirror --json local/shs /tmp/minio-backup" >/tmp/minio-mirror.log
-  tar --append -f "${TEMP_PRE}" -C /tmp minio-backup
-  rm -rf /tmp/minio-backup
+  docker compose --env-file "${ENV_FILE}" cp minio:/tmp/minio-backup "${MINIO_STAGE}"
+  tar --append -f "${TEMP_PRE}" -C "${MINIO_STAGE}" minio-backup
+  rm -rf "${MINIO_STAGE}"
+  docker compose --env-file "${ENV_FILE}" exec -T minio rm -rf /tmp/minio-backup
 else
   echo "${TRACE_ID} skipping minio mirror (mc missing)" >&2
 fi
