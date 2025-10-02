@@ -1,30 +1,61 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
-- **Fundament/**: Host baselines (OS, Docker, Git) and promotion notes; no project code lives here.
-- **Basement/**: Contains naked service stubs plus the `toolbox/` mono-repo scaffold (catalogs, schemas, projects, inventories, documents, containers). Compose drafts live under `basement/toolbox/documents/`.
-- **Wardrobe/**, **Entrance/**, **Stable/**: Reserved for overlays, pre-release validation, and production rollouts; currently placeholders.
-- Keep new assets within the appropriate house layer and reference shared data in `basement/toolbox/projects/` when planning updates.
+This guide is a quick reference for contributors.  Read it before making changes.
 
-## Build, Test, and Development Commands
-- Kein automatisierter Build. Draft-Skripte liegen in `basement/toolbox/scripts/` und beenden sich bewusst früh.
-- Für den Codex/Ollama-Stack: Host-seitig `ollama serve` starten (Port 11434). Danach `./basement/toolbox/bin/gcodex` für interaktive Sessions (`codex --profile garvis`) bzw. `./basement/toolbox/bin/gcodex --version` als Smoke-Test.
-- Vor neuen Befehlen zuerst den Zweck im passenden README dokumentieren (z. B. Compose-Aufrufe in `basement/toolbox/projects/toolbox/README.md`).
+## 1. Project Structure & Module Organization
 
-## Coding Style & Naming Conventions
-- Use two spaces for YAML, four spaces for Markdown code blocks, and stay in ASCII unless UTF-8 is required by upstream docs.
-- Project slugs follow `area-topic-scope` (see `basement/toolbox/projects/_template/PROJECT.yaml`).
-- Timestamp format: `YYYY-MM-DDThh-mm-ssZ` (filesystem safe). Maintain `Do not ...` warnings in placeholder files to signal incomplete sections.
+| Folder | Purpose |
+|--------|---------|
+| **Fundament/** | Baselines (OS, Docker, Git) & promotion notes – *no source code*.
+| **Basement/** | Naked service stubs + `toolbox/` scaffold.  Draft compose files live in `basement/toolbox/documents/`.
+| **Wardrobe/**, **Entrance/**, **Stable/** | Reserved for overlay, pre‑release, and production stages – currently empty.
+| **tests/** | Acceptance‑shell scripts that confirm the stack works.
 
-## Testing Guidelines
-- No test framework is configured. When introducing tests, describe the target coverage and invocation within `basement/toolbox/docs/overview.md` and add scripts under `basement/toolbox/scripts/`.
-- Name future test files after the component under test (e.g., `validate_repo_test.py`) and ensure they can run inside the planned Docker stack.
+**Example** – a new component should live in
+```bash
+basement/toolbox/projects/toolbox/new‑feature/PROJECT.yaml
+```
 
-## Commit & Pull Request Guidelines
-- Write imperative, scope-aware commit messages (e.g., `Document toolbox compose plan`). Mention affected layers (Fundament/Basement/etc.) when relevant.
-- Pull requests should summarize structural changes, link to planning documents (e.g., `basement/toolbox/projects/toolbox/README.md`), and confirm that placeholder warnings remain or are resolved.
-- Include screenshots or command output snippets only when they aid review; otherwise describe expected outcomes textually.
+## 2. Build, Test, and Development Commands
 
-## Security & Configuration Tips
-- Host secrets go in `.env.local` (ignored) and must never be committed. Shared volumes should expose only `./shared` unless promotion gates approve more.
-- Document new dependencies in `fundament/versions.yaml` (host-level) or `basement/toolbox/inventories/` (project-level) before shipping changes.
+* `ollama serve` – starts the model server (port 11434). Must run before further steps.
+* `./basement/toolbox/bin/gcodex` – launch an interactive Codex session (`codex --profile garvis`).
+* `./basement/toolbox/bin/gcodex --version` – quick smoke‑test.
+* `make build` – *(planned)* will build `codex-cli` and run basic checks.
+
+Scripts are kept in `basement/toolbox/scripts/`; keep each one short and quit early if possible.
+
+## 3. Coding Style & Naming Conventions
+
+* **YAML** – 2‑space indent.  **Markdown code blocks** – 4‑space indent.
+* **File names** – lowercase‑dash, e.g., `draft-compose-notes.md`.
+* **Project slugs** – `area-topic-scope` (see `projects/_template/PROJECT.yaml`).
+* **Timestamps** – `YYYY‑MM‑DDThh-mm-ssZ` (e.g., `2024‑10‑02T14‑30‑00Z`).
+* **Placeholders** – keep `# Do not …` comments until the section is finished.
+
+No linting tool is required; just mimic the style of existing files.
+
+## 4. Testing Guidelines
+
+The repo has no automated test framework yet.  When adding tests:
+
+* Put test scripts in `basement/toolbox/scripts/`.
+* Name them after the component under test, e.g., `validate_repo_test.py`.
+* Explain how to run them in `basement/toolbox/docs/overview.md`.
+
+Future plans: integrate `bats` (bash) or `pytest` (Python).
+
+## 5. Commit & Pull Request Guidelines
+
+* **Commit messages**: imperative, mention the affected layer.
+  Example: `Basement: Add new compose draft`.
+* **Pull requests**: concise description, link to relevant docs.
+  Keep placeholder warnings if intentional.
+* **Screenshots**: include only when they clarify a change.
+
+## 6. Security & Configuration Tips
+
+* Store secrets in `.env.local` (ignored by Git) – never commit them.
+* Shared volumes expose only `./shared` by default.
+* Document new dependencies in `fundament/versions.yaml` or inside `basement/toolbox/inventories/`.
+
