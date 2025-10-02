@@ -38,6 +38,17 @@ cp "${TEMP_DIR}/secrets/tls/leaf.key" "${ROOT}/secrets/tls/leaf.key"
 cp "${TEMP_DIR}/VERSIONS.lock" "${ROOT}/VERSIONS.lock"
 cp "${TEMP_DIR}/logs/shs.jsonl" "${ROOT}/logs/shs.jsonl"
 
+if [[ -d "${TEMP_DIR}/minio-backup" ]]; then
+  if docker compose --env-file "${ENV_FILE}" exec -T minio which mc >/dev/null 2>&1; then
+    docker compose --env-file "${ENV_FILE}" exec -T minio /bin/sh -c 'rm -rf /tmp/minio-restore && mkdir -p /tmp/minio-restore'
+    docker compose --env-file "${ENV_FILE}" cp "${TEMP_DIR}/minio-backup/." minio:/tmp/minio-restore
+    docker compose --env-file "${ENV_FILE}" exec -T minio /bin/sh -c "mc alias set local https://minio:9000 \"${MINIO_ROOT_USER}\" \"${MINIO_ROOT_PASSWORD}\" --api s3v4 && mc mirror --overwrite --remove /tmp/minio-restore local/shs"
+    docker compose --env-file "${ENV_FILE}" exec -T minio rm -rf /tmp/minio-restore
+  else
+    echo "${TRACE_ID} skipping minio restore (mc missing)" >&2
+  fi
+fi
+
 SQL_ZST=$(ls "${TEMP_DIR}"/postgres-*.sql.zst | head -n1)
 if [ -z "${SQL_ZST}" ]; then
   echo "${TRACE_ID} missing postgres dump" >&2
