@@ -7,8 +7,8 @@ This appendix will capture the approved procedure for executing and auditing the
 ## Outline
 1. **Scope & Preconditions**  
    Define the dataset, environment, and retention controls targeted by the delete rehearsal.
-2. **Dry-Run Validation**  
-   Document the non-destructive rehearsal invoked by `tests/acceptance/06_delete.sh`, including expected logs.
+2. **Dry-Run Validation**
+   Document the non-destructive rehearsal invoked by `tests/acceptance/delete_retention_test.sh`, including expected logs and parameters. : Bitte durch Operator verifizieren!
 3. **Execution Steps**  
    Provide the precise command sequence (CLI + Make targets) with guardrails for manual approval.
 4. **Evidence Capture**  

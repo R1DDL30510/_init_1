@@ -90,7 +90,7 @@ The audit team executed the review using dual-control validation and evidence tr
 ### 4.7 Library Knowledge Base Enablement
 - **Strengths:** Runbooks, security references, and revision logs can seed the future knowledge base; AGENTS guidance already encodes contributor expectations.
 - **Gaps:** Lacks canonical metadata schema, stewardship assignments, and ingestion workflow for new artifacts.
-- **Action:** Draft taxonomy in `docs/library-schema.md`, define curation workflow steps in `RUNBOOK.md`, and align with change management policy. Target completion: within upcoming planning increment.
+- **Action:** Draft taxonomy in `docs/library-schema.md`, define curation workflow steps in `RUNBOOK.md`, and align with change management policy. Target completion: within upcoming planning increment. : Bitte durch Operator verifizieren!
 
 ## 5. Gating Actions
 | ID | Task | Owner | Due | Status | Evidence Required |
@@ -112,5 +112,5 @@ The audit team executed the review using dual-control validation and evidence tr
 - **A. Evidence Links** — Consolidated in [`docs/audit-matrix.md`](audit-matrix.md) to maintain single source of scoring truth.
 - **B. Revision Tracking** — Updates to be mirrored in [`docs/revision-2025-09-28.md`](revision-2025-09-28.md) per change management guidelines.
 - **C. Whole-House Navigation & Dependency Guide** — Use [`docs/project-compendium.md`](project-compendium.md) for current navigation, with dependency matrix follow-up scheduled for `docs/house-governance.md` (GA-06).
-- **D. Library Knowledge Base Roadmap** — Future taxonomy and ingestion workflow to reside in `docs/library-schema.md` with supporting runbook updates.
+- **D. Library Knowledge Base Roadmap** — Future taxonomy and ingestion workflow to reside in `docs/library-schema.md` with supporting runbook updates. : Bitte durch Operator verifizieren!
 - **E. Contact Roster** — Maintained in internal directory (out of scope for repository).

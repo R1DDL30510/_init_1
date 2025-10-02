@@ -1,33 +1,33 @@
 schema_version: 1
-compose_schema_sha256: "***FILL***"
+compose_schema_sha256: "53fce2032eb844eb2ea4b949950ff51062e5bab6968ef51e18c25ab891a8cb0d"
 services:
   proxy:
-    image: caddy:2.7.6
-    digest: "***FILL***"
+    image: docker.io/library/caddy:2.7.6
+    digest: "sha256:7b51768d110708c44179dc299884e9ee73d243a37abccce2dc796abc36371a38"
   openwebui:
-    image: ghcr.io/open-webui/open-webui:0.1.128
-    digest: "***FILL***"
+    image: ghcr.io/open-webui/open-webui:git-509d2a6
+    digest: "sha256:3c0aba764a633c9f8edb8474f327ea2d534f54802e741a66a3ab75aa1069e387"
   n8n:
-    image: n8nio/n8n:1.45.1
-    digest: "***FILL***"
+    image: docker.io/n8nio/n8n:1.45.1
+    digest: "sha256:cd74b115cae417cb36a98bf3af1a0eec7fc6cbeae46e6b64ef99e54e2062515a"
   postgres:
-    image: postgres:15.6
-    digest: "***FILL***"
+    image: docker.io/library/postgres:15.6
+    digest: "sha256:0b723c153bca6ffdc3d8084d3b4d493a945b955456bb4318c74f7a66d371a1fd"
   minio:
-    image: minio/minio:RELEASE.2024-01-11T07-46-16Z
-    digest: "***FILL***"
+    image: docker.io/minio/minio:RELEASE.2024-01-11T07-46-16Z
+    digest: "sha256:b095ae7c04b9f26dcd7834ebc1f38e15fba58d3518c49c1118c56e309a5e5e91"
   ocr:
     image: ghcr.io/shs/offline-doctr:0.7.1
-    digest: "***FILL***"
+    digest: ": Bitte durch Operator verifizieren! Zugriff auf ghcr.io/shs/offline-doctr:0.7.1 erforderlich."
   tei:
     image: ghcr.io/shs/local-tei:0.10.1
-    digest: "***FILL***"
+    digest: ": Bitte durch Operator verifizieren! Zugriff auf ghcr.io/shs/local-tei:0.10.1 erforderlich."
   reranker:
     image: ghcr.io/shs/local-reranker:0.3.0
-    digest: "***FILL***"
+    digest: ": Bitte durch Operator verifizieren! Zugriff auf ghcr.io/shs/local-reranker:0.3.0 erforderlich."
   ollama:
-    image: ollama/ollama:0.1.32
-    digest: "***FILL***"
+    image: docker.io/ollama/ollama:0.1.32
+    digest: "sha256:bef60d0ca6194ae88df3107cd0f53cc44cc2d0e3d1a6d9798bab9ef80e31e364"
 models:
   embeddings:
     provider: tei

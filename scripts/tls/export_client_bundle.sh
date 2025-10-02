@@ -53,7 +53,7 @@ for artifact in ca.crt ca.der leaf.pem leaf.der leaf.cer leaf.key leaf.key.der l
       chmod 644 "${CLIENT_DIR}/${artifact}"
     fi
   fi
- done
+done
 
 tar -C "${TMP_DIR}" -cf - . | zstd -q -o "${ARCHIVE_PATH}"
 chmod 600 "${ARCHIVE_PATH}"
