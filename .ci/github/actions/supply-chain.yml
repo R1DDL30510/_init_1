@@ -1,0 +1,49 @@
+name: supply‑chain
+on:
+  push:
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq python3 python3-pip
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+          curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          echo "$PWD/bin" >> $GITHUB_PATH || true
+      - name: Vendor verify
+        run: make vendor-verify
+      - name: Lock & SBOM
+        run: make lock sbom
+      - name: Audit
+        run: make audit
+      - name: Produce split-repos
+        run: make split-repos
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply‑chain‑artifacts
+          path: |
+            VERSIONS.lock
+            sbom/**
+            audit/**
+            generated/**
+      - name: Fail on critical
+        run: |
+          python3 - <<'PY'
+          import json,glob,sys
+          crit=0
+          for p in glob.glob('audit/cve/*.json'):
+              try:
+                  d=json.load(open(p))
+                  for m in d.get('matches',[]):
+                      sev=(m.get('vulnerability') or {}).get('severity','').upper()
+                      if sev=='CRITICAL': crit+=1
+              except: pass
+          print('CRITICAL_FINDINGS=',crit)
+          sys.exit(1 if crit>0 else 0)
+          PY

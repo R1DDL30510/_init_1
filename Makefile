@@ -90,7 +90,106 @@ guard-secrets:
 	@if [ ! -f $(ENV_FILE) ]; then \
 		echo "Missing $(ENV_FILE); run make bootstrap" >&2; \
 		exit 1; \
+    fi
+
+## Supply‑chain helper targets
+.PHONY: vendor-verify lock sbom audit split-repos reproduce clean
+
+vendor-verify:
+	./scripts/discover_components.sh
+	# semantic diff on (name,version,relpath,sha256,size)
+	python3 - <<'PY'
+import csv,sys
+import filecmp
+csvfile='tmp/components.csv'
+with open(csvfile) as f:
+    rdr=csv.DictReader(f)
+    rows=[(r['name'],r['version'],r['relpath'],r['sha256'],r['bytes']) for r in rdr]
+csvlock='VERSIONS.lock'
+lines=[]
+with open(csvlock) as f:
+    key=None
+    d={}
+    for line in f:
+        line=line.strip()
+        if line=='[[artifact]]':
+            if d: lines.append(tuple([d.get(k,'') for k in ['name','version','relpath','sha256','bytes']]))
+            d={}
+        elif '=' in line:
+            k,v=line.split('=',1)
+            d[k.strip()]=v.strip().strip('"')
+    if d: lines.append(tuple([d.get(k,'') for k in ['name','version','relpath','sha256','bytes']]))
+print('---',file=sys.stderr)
+for r in sorted(rows): print(r)
+for r in sorted(lines): print(r)
+PY
+# compare outputs
+if ! diff -u <(python3 - <<'PY'
+import csv,sys
+with open('tmp/components.csv') as f:
+    rdr=csv.DictReader(f)
+    rows=[(r['name'],r['version'],r['relpath'],r['sha256'],r['bytes']) for r in rdr]
+print('\n'.join('\t'.join(a) for a in sorted(rows)))
+PY) <(python3 - <<'PY'
+import csv,sys
+lines=[]
+with open('VERSIONS.lock') as f:
+    d={}
+    for line in f:
+        line=line.strip()
+        if line=='[[artifact]]':
+            if d: lines.append((d.get('name',''),d.get('version',''),d.get('relpath',''),d.get('sha256',''),d.get('bytes','')))
+            d={}
+        elif '=' in line:
+            k,v=line.split('=',1)
+            d[k.strip()]=v.strip().strip('"')
+    if d: lines.append((d.get('name',''),d.get('version',''),d.get('relpath',''),d.get('sha256',''),d.get('bytes','')))
+print('\n'.join('\t'.join(a) for a in sorted(lines)))
+PY)) ; then 
+		printf 'FAIL: vendor-verify semantic diff\n'
+		exit 1
 	fi
+
+lock:
+	./scripts/build_lock.py
+
+sbom:
+	./scripts/sbom_generate.sh
+
+audit:
+	./scripts/audit.sh
+
+split-repos:
+	./scripts/split_repos.sh
+
+reproduce: vendor-verify lock sbom audit split-repos
+
+clean:
+	rm -rf tmp sbom audit generated
+
+## Supply‑chain helper targets
+.PHONY: vendor-verify lock sbom audit split-repos reproduce clean
+
+vendor-verify:
+	./scripts/discover_components.sh
+	diff -u VERSIONS.lock tmp/components.csv || true
+
+lock:
+	./scripts/build_lock.py
+
+sbom:
+	./scripts/sbom_generate.sh
+
+audit:
+	./scripts/audit.sh
+
+split-repos:
+	./scripts/split_repos.sh
+
+reproduce: vendor-verify lock sbom audit split-repos
+
+clean:
+	rm -rf tmp sbom audit generated
 	@if [ ! -f $(TLS_DIR)/ca.crt ] || [ ! -f $(TLS_DIR)/leaf.pem ]; then \
 		echo "TLS assets missing; run make bootstrap" >&2; \
 		exit 1; \
@@ -99,3 +198,27 @@ guard-secrets:
 		echo "Environment contains placeholders; update $(ENV_FILE)" >&2; \
 		exit 1; \
 	fi
+
+## Supply‑chain helper targets
+.PHONY: vendor-verify lock sbom audit split-repos reproduce clean
+
+vendor-verify:
+	./scripts/discover_components.sh
+	diff -u VERSIONS.lock tmp/components.csv || true
+
+lock:
+	./scripts/build_lock.py
+
+sbom:
+	./scripts/sbom_generate.sh
+
+audit:
+	./scripts/audit.sh
+
+split-repos:
+	./scripts/split_repos.sh
+
+reproduce: vendor-verify lock sbom audit split-repos
+
+clean:
+	rm -rf tmp sbom audit generated
