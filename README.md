@@ -1,129 +1,135 @@
 # Secure Home Systems (SHS) Bootstrap Stack
 
-> “Secure the house, illuminate the library, promote with confidence.” — SHS mantra
+> "Secure the house, illuminate the library, promote with confidence."
 
-## Table of Contents
-1. [Executive Overview](#executive-overview)
-2. [Wayfinding & Documentation Legend](#wayfinding--documentation-legend)
-3. [Repository Atlas](#repository-atlas)
-4. [Documentation Portfolio](#documentation-portfolio)
-5. [Operational Reference](#operational-reference)
-6. [Acceptance Tests](#acceptance-tests)
-7. [Change Management & Consolidation Roadmap](#change-management--consolidation-roadmap)
-8. [Contributing Guidelines](#contributing-guidelines)
+## 1. Worum es geht
+SHS ist ein Technikpaket für Unternehmen, das komplett auf einem eigenen Rechner läuft. Es beantwortet Fragen, indem es zuerst lokale Dokumente durchsucht und danach eine Antwort schreibt. Fachlich nennt man das einen **RAG-Ansatz**: *R*etrieval (*nachschlagen*), *A*ugmented (*mit zusätzlichen Fakten angereichert*), *G*eneration (*Antwort formulieren*). Alles passiert offline und ohne Cloud.
 
-## Executive Overview
-The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prioritizes determinism, GDPR alignment, and auditable operations. Docker Compose orchestrates proxy, OpenWebUI, n8n workflows, Postgres with pgvector, MinIO object storage, OCR, TEI embeddings, reranker, and optional Ollama services. Runtime images (including the private GHCR builds) are pinned through `VERSIONS.lock`, and `make` automation now emits `age`-encrypted backups with traceable logging and secrets hygiene.
+Damit die Daten sicher bleiben, erzwingen wir bei jeder Verbindung **TLS** (Transport Layer Security). Du kannst dir TLS wie einen Briefumschlag vorstellen: Wer keine passende Schlüssel-Kombination besitzt, kann nicht mitlesen oder etwas verändern. "Pipeline" bedeutet hier einfach die Abfolge von Schritten, die vom Eingang einer Frage bis zur fertigen Antwort durchlaufen wird.
 
-- **Primary strategy pillars**: local-first execution, least privilege, deterministic artifacts, structured observability, and fail-closed security posture.
-- **Compliance tracking**: see [`docs/audit-matrix.md`](docs/audit-matrix.md) for a scored view against SHS principles and relevant industry expectations.
+Die wichtigsten Programme, die zusammen mit Docker Compose gestartet werden, sind:
 
-## Wayfinding & Documentation Legend
-- **Start Here:** [`docs/project-compendium.md`](docs/project-compendium.md) — whole-house presentation with chapter legend, personas, and direct links into each layer.
-- **Audit Readiness:** [`docs/pre-release-audit.md`](docs/pre-release-audit.md) — mapped controls, findings, and gating actions for Wardrobe → Entrance promotion (confidence 0.99).
-- **Governance Blueprint:** [`docs/house-governance.md`](docs/house-governance.md) tracks dependency matrices and promotion approvals across house layers.
-- **Quote & Commentary:** Maintain inline quotes and call-outs across documentation to keep the narrative aligned with promotion discipline.
+| Dienst | Was er tut |
+| --- | --- |
+| **Proxy** | Lenkt den gesamten Verkehr über verschlüsselte Verbindungen und blockiert alles Unsichere. |
+| **OpenWebUI** | Grafische Oberfläche, um Fragen zu stellen und Antworten zu lesen. |
+| **n8n** | Automatisierte Arbeitsabläufe, z. B. zum Import neuer Dokumente. |
+| **Postgres mit pgvector** | Datenbank, die Texte speichert und sie für schnelle Ähnlichkeitssuche vorbereitet. |
+| **MinIO** | Lokaler Dateispeicher für größere Dateien wie PDFs. |
+| **OCR & TEI** | Verarbeiten gescannte Dokumente zu durchsuchbarem Text. |
+| **Reranker** | Sortiert gefundene Texte nach Relevanz. |
+| **Ollama (optional)** | Lokaler KI-Dienst, der die eigentlichen Antworten formuliert, falls GPU-Unterstützung vorhanden ist. |
 
-## Repository Atlas
-| Layer | Path | Description | Reference |
+Alle Docker-Images sind in `VERSIONS.lock` festgehalten. Dadurch wissen wir jederzeit, welche Version eingesetzt wurde. `make`-Befehle erstellen zusätzlich verschlüsselte Backups mit `age`, damit niemand unbefugt Einsicht erhält.
+
+### Sicherheits- und Compliance-Überblick
+- **Arbeitsprinzipien:** Lokal arbeiten, nur so viele Rechte wie nötig vergeben, jede Version festhalten, Abläufe protokollieren und bei Fehlern sicher abschalten.
+- **Prüfmatrix:** [`docs/audit-matrix.md`](docs/audit-matrix.md) zeigt, wie gut wir diese Prinzipien derzeit einhalten. Letztes Update laut Git-Historie: 2. Oktober 2025. Die Matrix wird mindestens einmal pro Quartal in den Wartungs-Meetings überprüft.
+
+## 2. Orientierung & wichtige Unterlagen
+- **Einstieg:** [`docs/project-compendium.md`](docs/project-compendium.md) – Überblick über alle Bereiche des "Hauses" und passende Ansprechpartner.
+- **Audit-Vorbereitung:** [`docs/pre-release-audit.md`](docs/pre-release-audit.md) – Checkliste, bevor neue Funktionen für externe Tests freigeschaltet werden.
+- **Governance:** [`docs/house-governance.md`](docs/house-governance.md) – Wer entscheidet was, welche Abhängigkeiten es gibt und wie Freigaben dokumentiert werden.
+- **Zitate & Hinweise:** Überall in der Dokumentation helfen kurze Randbemerkungen dabei, die gemeinsame Sprache beizubehalten.
+
+## 3. Verzeichnisführung ("Hausplan")
+| Bereich | Ordner | Zweck | Mehr dazu |
 | --- | --- | --- | --- |
-| Fundament | [`fundament/`](fundament/) | Host baselines (Docker, Git) and promotion notes maintained outside the container stack. | [`docs/architecture.md`](docs/architecture.md) |
-| Basement | [`basement/`](basement/) | Core service stubs plus the `toolbox/` mono-repo for catalogs, schemas, inventories, and compose drafts. | [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md) |
-| Wardrobe | [`wardrobe/`](wardrobe/) | Overlay profiles for CPU/GPU/CI parity and wrappers such as `gcodex`. | [`docs/architecture.md`](docs/architecture.md) |
-| Entrance | [`entrance/`](entrance/) | Canary and telemetry planning surfaces awaiting promotion gates. | [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md) |
-| Stable | [`stable/`](stable/) | Production rollout skeletons with monitoring placeholders. | [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md) |
-| Operations | [`scripts/`](scripts/) | TLS tooling, backup/restore, status reporting, and acceptance orchestration. | [`RUNBOOK.md`](RUNBOOK.md) |
-| Platform | [`compose.yaml`](compose.yaml) | Docker Compose stack with `minimal` and `gpu` profiles, strict health checks, and read-only enforcement. | [`SECURITY.md`](SECURITY.md) |
-| Data | [`db/`](db/) | Postgres schema, pgvector indices, and RLS policies with least-privilege roles. | [`SECURITY.md`](SECURITY.md) |
-| Tests | [`tests/`](tests/) | Acceptance suite emitting JSON logs with trace identifiers. | [`RUNBOOK.md`](RUNBOOK.md) |
+| Fundament | [`fundament/`](fundament/) | Basiseinstellungen für das Wirtssystem, z. B. Docker-Vorgaben. | [`docs/architecture.md`](docs/architecture.md) |
+| Basement | [`basement/`](basement/) | Sammlung von Dienst-Vorlagen, Schemas und Compose-Entwürfen. | [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md) |
+| Wardrobe | [`wardrobe/`](wardrobe/) | Profile für verschiedene Hardware (CPU, GPU) und Zusatzwerkzeuge wie `gcodex`. | [`docs/architecture.md`](docs/architecture.md) |
+| Entrance | [`entrance/`](entrance/) | Testbereich mit Messpunkten, bevor etwas produktiv geht. | [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md) |
+| Stable | [`stable/`](stable/) | Grundgerüst für den späteren Produktivbetrieb. | [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md) |
+| Operations | [`scripts/`](scripts/) | Hilfsskripte für TLS, Backups, Status und Tests. | [`RUNBOOK.md`](RUNBOOK.md) |
+| Plattform | [`compose.yaml`](compose.yaml) | Docker-Startplan mit Profilen für Minimal- und GPU-Betrieb. | [`SECURITY.md`](SECURITY.md) |
+| Daten | [`db/`](db/) | Datenbankschema, Sicherheitsregeln und Rollen. | [`SECURITY.md`](SECURITY.md) |
+| Tests | [`tests/`](tests/) | Automatisierte Akzeptanztests mit Protokollen. | [`RUNBOOK.md`](RUNBOOK.md) |
 
-## Documentation Portfolio
-- [`docs/project-compendium.md`](docs/project-compendium.md): Whole-house guide that orients readers through the house metaphor, highlights personas, and maps each document to the appropriate layer.
-- [`RUNBOOK.md`](RUNBOOK.md): operator lifecycle (bootstrap, start/stop, tests, backup/restore, rotations, incident handling). The runbook references Makefile targets directly to avoid duplicating procedural detail contained below.
-- [`SECURITY.md`](SECURITY.md): threat model, control surface, and maintenance expectations aligned with TLS, RLS, and audit log requirements.
-- [`docs/architecture.md`](docs/architecture.md): explains the house metaphor, current overlays, and planned flow between layers.
-- [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md): living snapshot of open planning tasks across layers, including promotion discipline updates (GA-04).
-- [`docs/audit-matrix.md`](docs/audit-matrix.md): consolidated scoring of compliance against SHS strategic principles and broader industry standards (TLS, GDPR, observability, reproducibility).
-- [`docs/pre-release-audit.md`](docs/pre-release-audit.md): pre-release audit (PoC confidence 0.99) summarizing evidence, gaps, and gating actions for Wardrobe → Entrance promotion with cross-links to the compendium legend.
-- [`docs/house-governance.md`](docs/house-governance.md): dependency matrices, ownership assignments, and promotion approvals for each layer (currently stubbed with next actions).
-- [`docs/runbook-ga-02-delete-playbook.md`](docs/runbook-ga-02-delete-playbook.md): appendix for the GA-02 delete rehearsal (stub; populate after the next drill).
+## 4. Dokumentensammlung
+- [`docs/project-compendium.md`](docs/project-compendium.md): Navigationshilfe durch alle Ebenen des Hauses, inklusive Zielgruppen.
+- [`RUNBOOK.md`](RUNBOOK.md): Schritt-für-Schritt-Anleitungen für Betrieb, Wartung und Notfälle.
+- [`SECURITY.md`](SECURITY.md): Sicherheitsmodell, Risiken und Gegenmaßnahmen – in Alltagssprache beschrieben.
+- [`docs/architecture.md`](docs/architecture.md): Bildet die Haus-Metapher ab und erklärt geplante Weiterentwicklungen.
+- [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md): Aufgabenliste pro Bereich, inklusive Anmerkungen zu anstehenden Freigaben.
+- [`docs/audit-matrix.md`](docs/audit-matrix.md): Bewertet den Status wichtiger Kontrollen, inklusive nächster Schritte.
+- [`docs/pre-release-audit.md`](docs/pre-release-audit.md): Prüfbericht mit offenen Punkten, bevor Funktionen den Testbereich verlassen.
+- [`docs/house-governance.md`](docs/house-governance.md): Dokumentiert Verantwortliche und Freigaben.
+- [`docs/runbook-ga-02-delete-playbook.md`](docs/runbook-ga-02-delete-playbook.md): Vorlage für zukünftige Löschübungen.
 
-## Operational Reference
-### Quickstart
-1. Open the repository via the sanitized helper alias (e.g. `~/Desktop/ShS/init_1`) so Docker volume names stay compliant; `scripts/validate_workspace.sh` enforces the requirement before Dev Container bootstrap (`scripts/validate_workspace.sh:1`).
-2. Copy the environment template and set secrets locally:
-    ```bash
-    cp .env.example .env.local
-    sed -i 's/***FILL***/<value>/g' .env.local
-    ```
-3. Bootstrap directories, TLS assets, and guardrails:
-    ```bash
-    make bootstrap
-    ```
-4. Update `VERSIONS.lock` with verified image digests and model revisions (private GHCR services included).
-5. Launch the stack (defaults to the `minimal` profile):
-    ```bash
-    make up
-    ```
-    To add GPU overlays, run `PROFILE=minimal,gpu make up` once the host has the NVIDIA container runtime.
-6. Inspect live status and health:
-    ```bash
-    make status
-    ```
+## 5. Betrieb in einfachen Schritten
+1. **Arbeitsordner prüfen:** Stelle sicher, dass das Repository an einem Pfad liegt, den `scripts/validate_workspace.sh` akzeptiert.
+2. **Umgebungsdatei vorbereiten:**
+   ```bash
+   cp .env.example .env.local
+   sed -i 's/***FILL***/<dein-wert>/g' .env.local
+   ```
+3. **Grundschutz erzeugen:**
+   ```bash
+   make bootstrap
+   ```
+   Dieser Befehl legt Ordner an, erstellt Zertifikate und aktiviert Schutzschalter.
+4. **Versionen kontrollieren:** Passe `VERSIONS.lock` an, falls neue Container benötigt werden.
+5. **Dienste starten (Standardprofil):**
+   ```bash
+   make up
+   ```
+6. **Status prüfen:**
+   ```bash
+   make status
+   ```
 
-#### Profiles
-- **minimal**: CPU-only deployment excluding Ollama; suitable for deterministic CI smoke checks.
-- **gpu**: extends the stack with Ollama configured for NVIDIA runtimes. Enable via:
-    ```bash
-    docker compose --env-file .env.local --profile gpu up -d
-    ```
+### Profile
+- **minimal:** Läuft komplett auf CPU und verzichtet auf Ollama. Ideal zum Testen.
+- **gpu:** Aktiviert Ollama und nutzt NVIDIA-Grafikkarten. Starten mit:
+  ```bash
+  docker compose --env-file .env.local --profile gpu up -d
+  ```
 
 ### Toolbox & `gcodex`
-- The Toolbox compose draft (`basement/toolbox/docker-compose.draft.yml`) provides an isolated shell for Codex experimentation against a host-provided Ollama endpoint. Guardrails mirror the main stack (read-only volume, deterministic image pins).
-- Launch the helper script once `ollama serve` is running on the host:
-    ```bash
-    ./basement/toolbox/bin/gcodex
-    ```
-- Pass additional flags directly to the Codex CLI, for example `./basement/toolbox/bin/gcodex --version`.
-- If the draft compose file is unavailable, the script explains how to target the main `compose.yaml` or disable the helper; see [`basement/toolbox/README.md`](basement/toolbox/README.md) for override instructions.
+- `basement/toolbox/docker-compose.draft.yml` stellt eine abgeschottete Umgebung zum Experimentieren bereit.
+- Sobald `ollama serve` auf dem Host läuft, kann folgende Hilfe genutzt werden:
+  ```bash
+  ./basement/toolbox/bin/gcodex
+  ```
+- Zusätzliche Flags werden direkt an die Codex-CLI durchgereicht, z. B. `./basement/toolbox/bin/gcodex --version`.
+- Falls der Entwurf fehlt, erklärt das Skript Alternativen. Mehr dazu in [`basement/toolbox/README.md`](basement/toolbox/README.md).
 
-### Environment Variables
-Review `.env.example` for the full catalog; key highlights include:
-- `SHS_BASE`, `SHS_DOMAIN`, `TLS_MODE`, `WATCH_PATH`, `LAN_ALLOWLIST`, `OFFLINE` — core bootstrap inputs.
-- `POSTGRES_*`, `MINIO_*`, `N8N_*`, `OPENWEBUI_*` — service credentials sourced from host secrets.
-- `*_IMAGE` entries — pinned container references synchronized with `VERSIONS.lock`.
-- `BACKUP_AGE_RECIPIENTS(_FILE)` and `BACKUP_AGE_IDENTITIES(_FILE)` — control the `age` recipients for encryption and the private keys for restores. Host operators must stage these files securely outside of version control.
+### Wichtige Umgebungsvariablen
+- `SHS_BASE`, `SHS_DOMAIN`, `TLS_MODE`, `WATCH_PATH`, `LAN_ALLOWLIST`, `OFFLINE` – Grundkonfiguration für die Umgebung.
+- `POSTGRES_*`, `MINIO_*`, `N8N_*`, `OPENWEBUI_*` – Zugangsdaten zu den einzelnen Diensten.
+- `*_IMAGE` – Verweis auf die verwendeten Docker-Images.
+- `BACKUP_AGE_RECIPIENTS(_FILE)` und `BACKUP_AGE_IDENTITIES(_FILE)` – Schlüssel für verschlüsselte Backups.
 
-### Deterministic TLS & Secrets
-- `make bootstrap` calls `scripts/tls/gen_local_ca.sh` to mint a reproducible local CA (`secrets/tls/ca.crt`) and service leaf certificates (`secrets/tls/leaf.pem`).
-- Rotate via `make ca.rotate`; all services fail closed if expected materials are missing.
-- Secrets remain in `secrets/` or `.env.local` (git-ignored). The repository never stores production credentials.
+### TLS & Geheimnisse einfach erklärt
+- `make bootstrap` ruft `scripts/tls/gen_local_ca.sh` auf. Dadurch entsteht eine lokale Zertifizierungsstelle (`secrets/tls/ca.crt`) und ein Zertifikat für die Dienste (`secrets/tls/leaf.pem`).
+- `make ca.rotate` erneuert diese Zertifikate. Wenn sie fehlen, starten die Dienste bewusst nicht.
+- Alle sensiblen Dateien liegen in `secrets/` oder `.env.local` und sind von Git ausgeschlossen.
 
-### Observability & Traceability
-- JSONL audit logs are written to `logs/shs.jsonl` with per-flow `trace_id` propagation.
-- `scripts/status.sh` summarizes HTTPS endpoints, enabled profiles, version pins, and health-check results.
-- Acceptance scripts log the executed command, exit status, and trace identifier for audit readiness.
+### Beobachtung & Nachvollziehbarkeit
+- Protokolle liegen als JSON-Zeilen in `logs/shs.jsonl` und enthalten eindeutige `trace_id`s.
+- `scripts/status.sh` fasst erreichbare HTTPS-Endpunkte, aktive Profile und Versionsstände zusammen.
+- Die Tests im Ordner `tests/acceptance/` dokumentieren jeden Lauf inklusive Rückgabewert und `trace_id`.
 
-### Data & Workflow Model
-- Schema definitions in `db/schema.sql` implement `documents`, `chunks`, and `embeddings` with pgvector indexes.
-- Row-level security policies in `db/policies.sql` grant `shs_app_r` and `shs_app_rw` least-privilege access.
-- Ingestion, sync, and resilience flows live in `n8n/init_flows.json`, mirroring acceptance coverage.
+### Datenmodell & Arbeitsabläufe
+- `db/schema.sql` beschreibt Tabellen für Dokumente, Textstücke und Vektor-Indizes.
+- `db/policies.sql` regelt, welche Rolle was lesen oder schreiben darf.
+- `n8n/init_flows.json` enthält vorbereitete Abläufe für Import, Synchronisation und Wiederherstellung.
 
-## Acceptance Tests
-Execute the entire suite once services pass readiness probes:
+## 6. Tests
+Führe die komplette Testsuite aus, sobald alle Dienste bereitstehen:
 ```bash
 make test
 ```
-Each script under `tests/acceptance/` emits structured JSON logs, verifying TLS-only proxy access, ingest idempotency, semantic answers with citations, SQL exact matches, sync reconciliation, and fault drill retries.
+Die Skripte unter `tests/acceptance/` prüfen verschlüsselten Zugriff, wiederholbare Importe, Antworten mit Quellen, Datenbankabfragen, Synchronisation und Fehlerszenarien.
 
-## Change Management & Consolidation Roadmap
-- **Redundancy audit**: `docs/architecture.md` and `docs/revision-2025-09-28.md` intentionally overlap on layer roles. Future consolidation can merge them into a single “Architecture & Roadmap” compendium when day-to-day planning stabilizes.
-- **Operational runbooks**: `RUNBOOK.md` retains lifecycle commands while deferring in-depth rationale to this README and the audit matrix. Additional procedure detail (e.g., mirror sync playbooks) should land in `docs/` rather than duplicating sections across files.
-- **Security references**: `SECURITY.md` is the canonical control register. Avoid scattering control descriptions into service READMEs to maintain a single source of truth.
-- **Placeholder directories**: `wardrobe/`, `entrance/`, and `stable/` currently house planning scaffolds only; evaluate quarterly whether they can be merged or promoted into the Compose stack.
+## 7. Änderungen & Ausblick
+- **Doppelte Inhalte reduzieren:** `docs/architecture.md` und `docs/revision-2025-09-28.md` überschneiden sich bewusst. Sobald der Tagesbetrieb stabil läuft, werden beide zu einem gemeinsamen Dokument zusammengeführt.
+- **Runbooks erweitern:** `RUNBOOK.md` bleibt das Hauptdokument für Abläufe. Ausführliche Hintergründe landen hier im README oder in der Audit-Matrix.
+- **Sicherheitsquelle bündeln:** `SECURITY.md` bleibt die einzige verbindliche Liste aller Sicherheitsmaßnahmen.
+- **Platzhalterbereiche beobachten:** `wardrobe/`, `entrance/` und `stable/` dienen aktuell der Planung. Einmal pro Quartal prüfen wir, ob daraus aktive Komponenten werden.
 
-## Contributing Guidelines
-- Maintain two-space indentation for YAML and four-space-indented Markdown code fences.
-- Document architecture or operational changes in the referenced files above before committing automation or service updates.
-- Use imperative commit messages referencing affected layers (e.g., `Align basement documentation map`).
-- Never commit secrets; mirror new dependencies into `fundament/versions.yaml` or `basement/toolbox/inventories/` before release.
+## 8. Beitrag leisten
+- YAML-Dateien mit zwei Leerzeichen einrücken, Markdown-Codeblöcke mit vier Leerzeichen.
+- Änderungen an Architektur oder Betrieb immer zuerst in der Dokumentation festhalten, dann Code anpassen.
+- Commit-Nachrichten im Imperativ verfassen, z. B. `Aktualisiere Basement-Dokumentation`.
+- Keine Geheimnisse committen. Neue Abhängigkeiten gehören vor einer Veröffentlichung nach `fundament/versions.yaml` oder `basement/toolbox/inventories/`.
