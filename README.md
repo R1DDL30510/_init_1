@@ -1,10 +1,28 @@
 # Secure Home Systems (SHS) Bootstrap Stack
 
-## Executive Summary
+> “Secure the house, illuminate the library, promote with confidence.” — SHS mantra
+
+## Table of Contents
+1. [Executive Overview](#executive-overview)
+2. [Wayfinding & Documentation Legend](#wayfinding--documentation-legend)
+3. [Repository Atlas](#repository-atlas)
+4. [Documentation Portfolio](#documentation-portfolio)
+5. [Operational Reference](#operational-reference)
+6. [Acceptance Tests](#acceptance-tests)
+7. [Change Management & Consolidation Roadmap](#change-management--consolidation-roadmap)
+8. [Contributing Guidelines](#contributing-guidelines)
+
+## Executive Overview
 The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prioritizes determinism, GDPR alignment, and auditable operations. Docker Compose orchestrates proxy, OpenWebUI, n8n workflows, Postgres with pgvector, MinIO object storage, OCR, TEI embeddings, reranker, and optional Ollama services. All images and models are pinned through `VERSIONS.lock`, and `make` automation guards reproducible secrets, backups, and status reporting.
 
 - **Primary strategy pillars**: local-first execution, least privilege, deterministic artifacts, structured observability, and fail-closed security posture.
 - **Compliance tracking**: see [`docs/audit-matrix.md`](docs/audit-matrix.md) for a scored view against SHS principles and relevant industry expectations.
+
+## Wayfinding & Documentation Legend
+- **Start Here:** [`docs/project-compendium.md`](docs/project-compendium.md) — whole-house presentation with chapter legend, personas, and direct links into each layer.
+- **Audit Readiness:** [`docs/pre-release-audit.md`](docs/pre-release-audit.md) — mapped controls, findings, and gating actions for Wardrobe → Entrance promotion (confidence 0.99).
+- **Governance Blueprint:** Upcoming [`docs/house-governance.md`](docs/house-governance.md) will host dependency matrices; until then leverage the compendium and architecture guide.
+- **Quote & Commentary:** Maintain inline quotes and call-outs across documentation to keep the narrative aligned with promotion discipline.
 
 ## Repository Atlas
 | Layer | Path | Description | Reference |
@@ -20,12 +38,13 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
 | Tests | [`tests/`](tests/) | Acceptance suite emitting JSON logs with trace identifiers. | [`RUNBOOK.md`](RUNBOOK.md) |
 
 ## Documentation Portfolio
-- [`RUNBOOK.md`](RUNBOOK.md): operator lifecycle (bootstrap, start/stop, tests, backup/restore, rotations, incident handling). The runbook now references Makefile targets directly to avoid duplicating procedural detail contained below.
+- [`docs/project-compendium.md`](docs/project-compendium.md): Whole-house guide that orients readers through the house metaphor, highlights personas, and maps each document to the appropriate layer.
+- [`RUNBOOK.md`](RUNBOOK.md): operator lifecycle (bootstrap, start/stop, tests, backup/restore, rotations, incident handling). The runbook references Makefile targets directly to avoid duplicating procedural detail contained below.
 - [`SECURITY.md`](SECURITY.md): threat model, control surface, and maintenance expectations aligned with TLS, RLS, and audit log requirements.
-- [`docs/architecture.md`](docs/architecture.md): explains the House metaphor, current overlays, and planned flow between layers.
-- [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md): living snapshot of open planning tasks across layers.
+- [`docs/architecture.md`](docs/architecture.md): explains the house metaphor, current overlays, and planned flow between layers.
+- [`docs/revision-2025-09-28.md`](docs/revision-2025-09-28.md): living snapshot of open planning tasks across layers, including promotion discipline updates (GA-04).
 - [`docs/audit-matrix.md`](docs/audit-matrix.md): consolidated scoring of compliance against SHS strategic principles and broader industry standards (TLS, GDPR, observability, reproducibility).
-- [`docs/pre-release-audit.md`](docs/pre-release-audit.md): pre-release audit (PoC confidence 0.99) summarizing evidence, gaps, and gating actions for Wardrobe → Entrance promotion.
+- [`docs/pre-release-audit.md`](docs/pre-release-audit.md): pre-release audit (PoC confidence 0.99) summarizing evidence, gaps, and gating actions for Wardrobe → Entrance promotion with cross-links to the compendium legend.
 
 ## Operational Reference
 ### Quickstart

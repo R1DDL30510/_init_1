@@ -1,8 +1,9 @@
 # House Architecture Scaffold
 
-Die House-Metapher strukturiert unser Repository in klar getrennte Ebenen. Dieses Dokument bündelt nun sämtliche Referenzen auf README, Runbook, Security-Guides und den neuen Compliance-Audit, damit jede Ebene konsistent dokumentiert bleibt.
+Die House-Metapher strukturiert unser Repository in klar getrennte Ebenen. Dieses Dokument bündelt nun sämtliche Referenzen auf README, Runbook, Security-Guides, das Whole-House-Compendium sowie den neuen Compliance-Audit, damit jede Ebene konsistent dokumentiert bleibt.
 
 - **Primärer Überblick**: [`README.md`](../README.md) enthält die Repository-Atlas-Tabelle, Quickstart-Anweisungen und Konsolidierungs-Roadmap.
+- **Navigator**: [`docs/project-compendium.md`](project-compendium.md) liefert Kapitel-Legenden, Personas und direkte Links je Ebene.
 - **Betrieb & Automatisierung**: [`RUNBOOK.md`](../RUNBOOK.md) verweist auf alle Makefile-Ziele und beschreibt Incident-, Backup- und Restore-Abläufe.
 - **Sicherheitskontrollen**: [`SECURITY.md`](../SECURITY.md) definiert Bedrohungsmodell und Maßnahmen; Scores stehen in [`docs/audit-matrix.md`](audit-matrix.md).
 - **Planungsstand**: [`revision-2025-09-28.md`](revision-2025-09-28.md) dokumentiert offene Aufgaben je Layer.
