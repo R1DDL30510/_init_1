@@ -32,7 +32,7 @@ The audit team executed the review using dual-control validation and evidence tr
 | NIST CSF PR.AC, PR.DS | TLS-only ingress, RLS enforcement, credential segregation | Implemented | Validated via `make bootstrap` artefacts and Postgres policies. |
 | NIST CSF DE.CM, RS.MI | Health probes, JSONL traces, incident workflow | Implemented with enhancement planned | Alert automation pending (GA-03). |
 | ISO/IEC 27001 A.12, A.17 | Deterministic builds, backup and recovery runbooks | Implemented | Quarterly drill schedule outstanding (GA-05). |
-| CIS Controls 4, 8, 11 | Hardened compose baselines, audit log management, restore coverage | Implemented with monitoring gap | Certificate fingerprint validation pending (GA-01). |
+| CIS Controls 4, 8, 11 | Hardened compose baselines, audit log management, restore coverage | Implemented with monitoring gap | Certificate fingerprint validation scripted; awaiting CA baseline capture (GA-01). |
 | GDPR Articles 5, 17 | Data minimisation, deletion readiness | Partially implemented | Evidence required for executed deletion playbook (GA-02). |
 
 > **Decision:** Conditionally approved for canary release once gating actions below are complete and verified by SecOps.
@@ -50,7 +50,7 @@ The audit team executed the review using dual-control validation and evidence tr
 ## 3. Residual Risk Register
 | ID | Domain | Severity | Description | Mitigation Path | Target Residual |
 | --- | --- | --- | --- | --- | --- |
-| RR-01 | Platform Security | Medium | Lack of automated certificate fingerprint validation could allow unnoticed drift. | Implement GA-01 and embed fingerprint baseline in `make status`. | Low |
+| RR-01 | Platform Security | Medium | Automated fingerprint verification available once baseline is supplied. | Capture CA fingerprint baseline and log `make status` validation output. | Low |
 | RR-02 | Data Protection | Medium | Deletion workflow evidence absent; risk of incomplete GDPR fulfilment. | Execute GA-02 with acceptance coverage and documented appendix. | Low |
 | RR-03 | Change Management | Medium | Promotion decision matrix missing, reducing governance transparency. | Complete GA-04 with CAB approval and cross-links. | Low |
 | RR-04 | Business Continuity | Medium | Restore drills not scheduled; risk of skill atrophy. | Calendarise per GA-05 and log outcomes. | Low |
@@ -59,8 +59,8 @@ The audit team executed the review using dual-control validation and evidence tr
 ## 4. Findings & Recommendations
 ### 4.1 Platform Security
 - **Strengths:** Automated CA generation with deterministic output, strict TLS-only proxy enforcing mTLS upstream, fail-closed service start via health checks.
-- **Gaps:** No automated certificate integrity check wired into `make status`.
-- **Action:** Extend status script to validate cert fingerprints (mapped to CIS Control 4.1). Target completion: prior to Entrance promotion.
+- **Gaps:** Baseline certificate fingerprint still to be captured with the updated status workflow.
+- **Action:** Use the updated status script to validate cert fingerprints and capture evidence before Entrance promotion.
 
 ### 4.2 Data Protection & Privacy
 - **Strengths:** Row-level security policies, hashed identifiers, structured deletion workflows described in runbook, n8n flows aligning with GDPR minimization principles.
@@ -95,7 +95,7 @@ The audit team executed the review using dual-control validation and evidence tr
 ## 5. Gating Actions
 | ID | Task | Owner | Due | Status | Evidence Required |
 | --- | --- | --- | --- | --- | --- |
-| GA-01 | Integrate certificate fingerprint verification into `make status`. | Platform Ops | 2025-01-24 | Open | Updated `scripts/status.sh`, command output screenshot/log. |
+| GA-01 | Integrate certificate fingerprint verification into `make status`. | Platform Ops | 2025-01-24 | Ready for validation | Updated `scripts/status.sh`, runbook fingerprint procedure, command output screenshot/log. |
 | GA-02 | Publish GDPR deletion playbook appendix and add automated deletion test. | Data Steward | 2025-01-31 | In Progress | `RUNBOOK.md` appendix, new acceptance test log. |
 | GA-03 | Define n8n-based alert workflow for repeated health-check failures. | SecOps | 2025-02-07 | Planned | Diagram or documentation in revision log, workflow export. |
 | GA-04 | Document Canary → Stable decision matrix in revision log. | Change Advisory Board | 2025-02-07 | Planned | Updated section in [`docs/revision-2025-09-28.md`](revision-2025-09-28.md). |

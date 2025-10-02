@@ -15,12 +15,20 @@ This runbook is the operational companion to the repository atlas in [`README.md
     - copy `.env.example` into `.env.local` when absent.
 3. Validate `VERSIONS.lock` contains the intended image tags, digests, and model metadata referenced by `compose.yaml` and service configs.
 
+## TLS Fingerprint Verification
+1. After generating certificates, record the expected SHA-256 fingerprint for the leaf certificate:
+    - `openssl x509 -in secrets/tls/leaf.pem -noout -fingerprint -sha256 > secrets/tls/leaf.sha256`
+2. Provide the baseline to `scripts/status.sh` by either:
+    - setting `SHS_TLS_LEAF_FINGERPRINT_SHA256` in `.env.local`, or
+    - setting `SHS_TLS_LEAF_FINGERPRINT_FILE` to the fingerprint file path (defaults to `secrets/tls/leaf.sha256`).
+3. Run `make status` to confirm the observed fingerprint matches the expected baseline before promoting artifacts.
+
 ## Lifecycle Commands
 | Action | Command | Notes |
 | --- | --- | --- |
 | Start services | `make up` | Defaults to the `minimal` profile; pass `PROFILE=gpu` to target the GPU overlay. |
 | Stop services | `make down` | Leaves persistent volumes intact; use `docker compose down -v` manually for destructive cleanup. |
-| Status summary | `make status` | Calls `scripts/status.sh` to report HTTPS endpoints, enabled profiles, and health probe results. |
+| Status summary | `make status` | Calls `scripts/status.sh` to report HTTPS endpoints, enabled profiles, health probes, and TLS fingerprint validation. |
 | Acceptance suite | `make test` | Runs all scripts under `tests/acceptance/` with trace-aware JSON logging. |
 | Rotate CA | `make ca.rotate` | Forces deterministic regeneration of CA/leaf materials; rerun `make up` afterwards. |
 | Backup | `make backup` | Produces `backups/shs-<timestamp>.tar.zst` containing TLS, logs, versions, and a Postgres dump. |
