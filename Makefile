@@ -32,6 +32,14 @@ down:
 .PHONY: test
 test:
 	@set -euo pipefail
+	@mkdir -p $(dir $(LOG_FILE))
+	@if [ ! -f $(LOG_FILE) ]; then \
+		umask 177 && touch $(LOG_FILE); \
+	fi
+	: "$${SHS_DELETE_TARGET_URL:=https://example.invalid/delete-target}"
+	: "$${SHS_DELETE_VALIDATION_URL:=https://example.invalid/delete-validate}"
+	: "$${SHS_DELETE_RECORD_ID:=00000000-0000-0000-0000-000000000000}"
+	export SHS_DELETE_TARGET_URL SHS_DELETE_VALIDATION_URL SHS_DELETE_RECORD_ID
 	@for script in $$(ls $(ACCEPTANCE)/*.sh | sort); do \
 		echo "Running $$script"; \
 		SHS_ENV_FILE=$(ENV_FILE) bash $$script || exit $$?; \

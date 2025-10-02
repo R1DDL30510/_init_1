@@ -11,7 +11,7 @@ Dieser Entwurf dient als spätere Vorlage für die `docker-compose.yml`, sobald 
   - Command: `/bin/bash` (interaktive Shell) oder direkt `codex`
   - Volumes: `shared-data:/workspace`
 - `ollama`
-  - Image: `ollama/ollama:latest`
+  - Image: `ollama/ollama:0.1.32`
   - Volumes: `shared-data:/workspace`; `ollama-models:/root/.ollama`
   - Ports: 11434 intern, optional nach außen
 - Volumes:
@@ -49,7 +49,7 @@ Dieser Entwurf dient als spätere Vorlage für die `docker-compose.yml`, sobald 
 
 ## Version Pinning (Draft)
 - `codex-cli`: 0.42.0 (Container & Host) – bereits geprüft.
-- `ollama`: 0.12.3 (Host) – stabiler Stand, weitere Modelle via `ollama pull`.
+- `ollama`: 0.1.32 (Host/Container) – stabiler Stand, weitere Modelle via `ollama pull`.
 - `mcp-gateway`: _tbd_ – festlegen, sobald Image evaluiert wurde.
 - Docker Engine / Desktop: 28.4.0 / 4.47.0 – Referenzwerte laut Fundament-Layer.
 
