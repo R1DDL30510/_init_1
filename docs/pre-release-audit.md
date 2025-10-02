@@ -1,8 +1,8 @@
 # SHS Pre-Release Audit Report (PoC Confidence 0.99)
 
-**Audit window:** 2025-01-15 → 2025-01-17  \
-**Release target:** Wardrobe → Entrance promotion for controlled canary rollout  \
-**Auditor:** Internal SecOps Guild (two-person review)  \
+**Audit window:** 2025-01-15 → 2025-01-17 (updated 2025-02-03 for whole-house overlay)  \
+**Release target:** Wardrobe → Entrance promotion for controlled canary rollout, with alignment across Fundament → Stable stack and the navigation model described in [`docs/project-compendium.md`](project-compendium.md)  \
+**Auditor:** Internal SecOps Guild (two-person review) with Architecture Steward consult  \
 **Confidence goal:** 0.99 (PoC standard) — requires closure of listed gating items prior to Stable promotion
 
 ## 1. Executive Summary
@@ -18,11 +18,14 @@
 | Observability & Incident Response | 0.97 | Ready | Trace IDs, JSONL audit stream, and incident steps documented. Evidence: [`RUNBOOK.md`](../RUNBOOK.md), [`scripts/status.sh`](../scripts/status.sh).
 | Change Management | 0.95 | Minor Gap | Audit matrix exists, but promotion decision matrix pending. Evidence: [`docs/audit-matrix.md`](audit-matrix.md), [`docs/revision-2025-09-28.md`](revision-2025-09-28.md).
 | Business Continuity | 0.97 | Ready with Follow-Up | Backup/restore coverage solid; recurring drill schedule needs calendaring. Evidence: [`RUNBOOK.md`](../RUNBOOK.md), [`Makefile`](../Makefile).
+| House Architecture Governance | 0.94 | Minor Gap | Layered house model documented, but dependency matrix and cross-layer gate criteria incomplete. Evidence: [`docs/architecture.md`](architecture.md), [`basement/toolbox/projects/`](../basement/toolbox/projects/).
+| Library Knowledge Base Readiness | 0.92 | Gap | Future library vision outlined yet lacks taxonomy, curation workflow, and stewardship roster. Evidence: [`docs/revision-2025-09-28.md`](revision-2025-09-28.md), repository AGENTS guardrails.
 
 > **Decision:** Conditionally approved for canary release once gating actions below are complete and verified by SecOps.
 
 ## 2. Scope & Methodology
-- **Artifacts reviewed:** `README.md`, `RUNBOOK.md`, `SECURITY.md`, `docs/architecture.md`, `docs/audit-matrix.md`, acceptance test scripts under `tests/`, TLS generation scripts, Docker Compose profiles, and change logs.
+- **Artifacts reviewed:** `README.md`, `RUNBOOK.md`, `SECURITY.md`, `docs/architecture.md`, `docs/project-compendium.md`, `docs/audit-matrix.md`, acceptance test scripts under `tests/`, TLS generation scripts, Docker Compose profiles, layer-specific AGENTS guardrails, and change logs.
+- **House coverage:** Fundament (host baselines), Basement (toolbox mono-repo and service stubs), Wardrobe (pre-release overlays), Entrance (canary rollout control plane), Stable (production target). Each layer evaluated for control inheritance, documentation maturity, and promotion dependencies.
 - **Controls mapped:**
   - *NIST CSF* — Identify (ID.GV), Protect (PR.AC, PR.DS, PR.PT), Detect (DE.CM), Respond (RS.MI), Recover (RC.RP).
   - *ISO/IEC 27001 Annex A* — A.5 Policies, A.8 Asset Management, A.12 Operations Security, A.13 Communications Security, A.17 Business Continuity.
@@ -55,6 +58,16 @@
 - **Gaps:** Regular restore drill cadence not yet calendarized.
 - **Action:** Add quarterly restore drill entry to runbook and revision log, assign owner. Target completion: within two weeks.
 
+### 3.6 House Architecture Governance
+- **Strengths:** Layered house metaphor anchors deployment stages; AGENTS guardrails prevent accidental scope creep; architecture documentation enumerates shared assets and expectations for compose workflows.
+- **Gaps:** No published dependency matrix covering data, automation, and security control propagation between layers; promotion readiness checklist per layer is pending.
+- **Action:** Publish `docs/house-governance.md` with dependency tables, readiness checklist, and escalation paths. Cross-link from architecture and revision docs. Target completion: prior to next architecture review.
+
+### 3.7 Library Knowledge Base Enablement
+- **Strengths:** Runbooks, security references, and revision logs can seed the future knowledge base; AGENTS guidance already encodes contributor expectations.
+- **Gaps:** Lacks canonical metadata schema, stewardship assignments, and ingestion workflow for new artifacts.
+- **Action:** Draft taxonomy in `docs/library-schema.md`, define curation workflow steps in `RUNBOOK.md`, and align with change management policy. Target completion: within upcoming planning increment.
+
 ## 4. Gating Actions
 | ID | Task | Owner | Due | Evidence Required |
 | --- | --- | --- | --- | --- |
@@ -63,6 +76,8 @@
 | GA-03 | Define n8n-based alert workflow for repeated health-check failures. | SecOps | 2025-02-07 | Diagram or documentation in revision log, workflow export. |
 | GA-04 | Document Canary → Stable decision matrix in revision log. | Change Advisory Board | 2025-02-07 | Updated section in [`docs/revision-2025-09-28.md`](revision-2025-09-28.md). |
 | GA-05 | Schedule quarterly restore drills and record owners. | Platform Ops | 2025-01-24 | Runbook entry and calendar reference in revision log. |
+| GA-06 | Produce house-wide dependency matrix and promotion checklist. | Architecture Steward | 2025-02-10 | New `docs/house-governance.md` with referenced tables. |
+| GA-07 | Define metadata taxonomy and curation workflow for knowledge base. | Documentation Guild | 2025-02-14 | `docs/library-schema.md`, updated `RUNBOOK.md` workflow section. |
 
 ## 5. Release Recommendation
 - **Current gate:** Proceed with Wardrobe → Entrance promotion **after** GA-01 through GA-03 close and evidence is logged.
@@ -72,4 +87,6 @@
 ## 6. Appendices
 - **A. Evidence Links** — Consolidated in [`docs/audit-matrix.md`](audit-matrix.md) to maintain single source of scoring truth.
 - **B. Revision Tracking** — Updates to be mirrored in [`docs/revision-2025-09-28.md`](revision-2025-09-28.md) per change management guidelines.
-- **C. Contact Roster** — Maintained in internal directory (out of scope for repository).
+- **C. Whole-House Navigation & Dependency Guide** — Use [`docs/project-compendium.md`](project-compendium.md) for current navigation, with dependency matrix follow-up scheduled for `docs/house-governance.md` (GA-06).
+- **D. Library Knowledge Base Roadmap** — Future taxonomy and ingestion workflow to reside in `docs/library-schema.md` with supporting runbook updates.
+- **E. Contact Roster** — Maintained in internal directory (out of scope for repository).
