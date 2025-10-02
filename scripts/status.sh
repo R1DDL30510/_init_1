@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT}/.env.local"
-VERSIONS="${ROOT}/VERSIONS.lock"
+VERSIONS="${ROOT}/locks/VERSIONS.lock"
 TLS_DIR="${ROOT}/secrets/tls"
 
 CHECK_DIGESTS=0

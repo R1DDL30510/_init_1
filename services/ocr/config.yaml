@@ -3,6 +3,12 @@ service:
   port: 8080
   log_level: info
   trace_header: X-Trace-Id
+storage:
+  endpoint: minio:9000
+  bucket: shs
+  secure: false
+  access_key_env: MINIO_ROOT_USER
+  secret_key_env: MINIO_ROOT_PASSWORD
 otp:
   models:
     text: doctr

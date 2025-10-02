@@ -14,9 +14,6 @@
   "containerEnv": {
     "DOCKER_BUILDKIT": "1"
   },
-  "runArgs": [
-    "--cap-drop=ALL"
-  ],
   "postCreateCommand": "sudo chmod 666 /var/run/docker.sock && ln -sfn /workspace /workspace/_init_1 && bash scripts/validate_workspace.sh --require-compliant && make bootstrap",
   "customizations": {
     "vscode": {
@@ -28,7 +25,8 @@
         "ms-toolsai.jupyter",
         "ms-ossdata.vscode-postgresql",
         "yzhang.markdown-all-in-one",
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "openai.chatgpt"
       ]
     }
   },

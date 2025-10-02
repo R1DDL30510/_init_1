@@ -90,7 +90,8 @@ cp "${TEMP_DIR}/secrets/tls/ca.crt" "${ROOT}/secrets/tls/ca.crt"
 cp "${TEMP_DIR}/secrets/tls/ca.key" "${ROOT}/secrets/tls/ca.key"
 cp "${TEMP_DIR}/secrets/tls/leaf.pem" "${ROOT}/secrets/tls/leaf.pem"
 cp "${TEMP_DIR}/secrets/tls/leaf.key" "${ROOT}/secrets/tls/leaf.key"
-cp "${TEMP_DIR}/VERSIONS.lock" "${ROOT}/VERSIONS.lock"
+mkdir -p "${ROOT}/locks"
+cp "${TEMP_DIR}/locks/VERSIONS.lock" "${ROOT}/locks/VERSIONS.lock"
 cp "${TEMP_DIR}/logs/shs.jsonl" "${ROOT}/logs/shs.jsonl"
 
 if [[ -d "${TEMP_DIR}/minio-backup" ]]; then

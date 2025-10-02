@@ -1,0 +1,6 @@
+{
+  "name": "shs-hash-reranker",
+  "dimension": 384,
+  "version": "1.0.0",
+  "description": "Deterministic hashing-based reranker"
+}

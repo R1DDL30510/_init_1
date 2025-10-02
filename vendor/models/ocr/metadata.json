@@ -1,0 +1,5 @@
+{
+  "name": "shs-light-ocr",
+  "version": "1.0.0",
+  "description": "Lightweight OCR pipeline using MinIO-backed storage and PyPDF"
+}

@@ -41,7 +41,7 @@ JSON
 docker compose --env-file "${ENV_FILE}" exec -T postgres pg_dump -U "${POSTGRES_USER}" "${POSTGRES_DB:-shs}" | zstd -q > "${BACKUP_DIR}/postgres-${STAMP}.sql.zst"
 
 tar --sort=name --mtime="${STAMP}" --owner=0 --group=0 --numeric-owner \
-  -cf "${TEMP_PRE}" -C "${ROOT}" secrets/tls logs/shs.jsonl VERSIONS.lock \
+  -cf "${TEMP_PRE}" -C "${ROOT}" secrets/tls logs/shs.jsonl locks/VERSIONS.lock \
   -C "${BACKUP_DIR}" "postgres-${STAMP}.sql.zst"
 
 if docker compose --env-file "${ENV_FILE}" exec -T minio which mc >/dev/null 2>&1; then

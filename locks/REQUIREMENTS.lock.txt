@@ -1,0 +1,60 @@
+# Generated on 2025-10-02T12-55-32Z
+
+service: tei
+  annotated_types-0.7.0-py3-none-any.whl sha256=1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53
+  anyio-4.11.0-py3-none-any.whl sha256=0287e96f4d26d4149305414d4e3bc32f0dcd0862365a4bddea19d7a1ec38c4fc
+  async_timeout-5.0.1-py3-none-any.whl sha256=39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c
+  asyncpg-0.29.0-cp39-cp39-macosx_11_0_arm64.whl sha256=e17b52c6cf83e170d3d865571ba574577ab8e533e7361a2b8ce6157d02c665d3
+  click-8.1.8-py3-none-any.whl sha256=63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2
+  exceptiongroup-1.3.0-py3-none-any.whl sha256=4d111e6e0c13d0644cad6ddaa7ed0261a0b36971f6d23e7ec9b4b9097da78a10
+  fastapi-0.110.0-py3-none-any.whl sha256=87a1f6fb632a218222c5984be540055346a8f5d8a68e8f6fb647b1dc9934de4b
+  h11-0.16.0-py3-none-any.whl sha256=63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86
+  idna-3.10-py3-none-any.whl sha256=946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3
+  pydantic_core-2.16.3-cp39-cp39-macosx_11_0_arm64.whl sha256=21b888c973e4f26b7a96491c0965a8a312e13be108022ee510248fe379a5fa23
+  pydantic-2.6.3-py3-none-any.whl sha256=72c6034df47f46ccdf81869fddb81aade68056003900a8724a4f160700016a2a
+  PyYAML-6.0.1-cp39-cp39-macosx_11_0_arm64.whl sha256=c8098ddcc2a85b61647b2590f825f3db38891662cfc2fc776415143f599bb859
+  sniffio-1.3.1-py3-none-any.whl sha256=2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2
+  starlette-0.36.3-py3-none-any.whl sha256=13d429aa93a61dc40bf503e8c801db1f1bca3dc706b10ef2434a36123568f044
+  typing_extensions-4.15.0-py3-none-any.whl sha256=f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
+  uvicorn-0.27.1-py3-none-any.whl sha256=5c89da2f3895767472a35556e539fd59f7edbe9b1e9c0e1c99eebeadc61838e4
+
+service: reranker
+  annotated_types-0.7.0-py3-none-any.whl sha256=1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53
+  anyio-4.11.0-py3-none-any.whl sha256=0287e96f4d26d4149305414d4e3bc32f0dcd0862365a4bddea19d7a1ec38c4fc
+  click-8.1.8-py3-none-any.whl sha256=63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2
+  exceptiongroup-1.3.0-py3-none-any.whl sha256=4d111e6e0c13d0644cad6ddaa7ed0261a0b36971f6d23e7ec9b4b9097da78a10
+  fastapi-0.110.0-py3-none-any.whl sha256=87a1f6fb632a218222c5984be540055346a8f5d8a68e8f6fb647b1dc9934de4b
+  h11-0.16.0-py3-none-any.whl sha256=63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86
+  idna-3.10-py3-none-any.whl sha256=946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3
+  pydantic_core-2.16.3-cp39-cp39-macosx_11_0_arm64.whl sha256=21b888c973e4f26b7a96491c0965a8a312e13be108022ee510248fe379a5fa23
+  pydantic-2.6.3-py3-none-any.whl sha256=72c6034df47f46ccdf81869fddb81aade68056003900a8724a4f160700016a2a
+  PyYAML-6.0.1-cp39-cp39-macosx_11_0_arm64.whl sha256=c8098ddcc2a85b61647b2590f825f3db38891662cfc2fc776415143f599bb859
+  sniffio-1.3.1-py3-none-any.whl sha256=2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2
+  starlette-0.36.3-py3-none-any.whl sha256=13d429aa93a61dc40bf503e8c801db1f1bca3dc706b10ef2434a36123568f044
+  typing_extensions-4.15.0-py3-none-any.whl sha256=f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
+  uvicorn-0.27.1-py3-none-any.whl sha256=5c89da2f3895767472a35556e539fd59f7edbe9b1e9c0e1c99eebeadc61838e4
+
+service: ocr
+  annotated_types-0.7.0-py3-none-any.whl sha256=1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53
+  anyio-4.11.0-py3-none-any.whl sha256=0287e96f4d26d4149305414d4e3bc32f0dcd0862365a4bddea19d7a1ec38c4fc
+  argon2_cffi_bindings-25.1.0-cp39-abi3-macosx_11_0_arm64.whl sha256=7aef0c91e2c0fbca6fc68e7555aa60ef7008a739cbe045541e438373bc54d2b0
+  argon2_cffi-25.1.0-py3-none-any.whl sha256=fdc8b074db390fccb6eb4a3604ae7231f219aa669a2652e0f20e16ba513d5741
+  certifi-2025.8.3-py3-none-any.whl sha256=f6c12493cfb1b06ba2ff328595af9350c65d6644968e5d3a2ffd78699af217a5
+  cffi-2.0.0-cp39-cp39-macosx_11_0_arm64.whl sha256=de8dad4425a6ca6e4e5e297b27b5c824ecc7581910bf9aee86cb6835e6812aa7
+  click-8.1.8-py3-none-any.whl sha256=63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2
+  exceptiongroup-1.3.0-py3-none-any.whl sha256=4d111e6e0c13d0644cad6ddaa7ed0261a0b36971f6d23e7ec9b4b9097da78a10
+  fastapi-0.110.0-py3-none-any.whl sha256=87a1f6fb632a218222c5984be540055346a8f5d8a68e8f6fb647b1dc9934de4b
+  h11-0.16.0-py3-none-any.whl sha256=63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86
+  idna-3.10-py3-none-any.whl sha256=946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3
+  minio-7.2.5-py3-none-any.whl sha256=ed9176c96d4271cb1022b9ecb8a538b1e55b32ae06add6de16425cab99ef2304
+  pycparser-2.23-py3-none-any.whl sha256=e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934
+  pycryptodome-3.23.0-cp37-abi3-macosx_10_9_universal2.whl sha256=187058ab80b3281b1de11c2e6842a357a1f71b42cb1e15bce373f3d238135c27
+  pydantic_core-2.16.3-cp39-cp39-macosx_11_0_arm64.whl sha256=21b888c973e4f26b7a96491c0965a8a312e13be108022ee510248fe379a5fa23
+  pydantic-2.6.3-py3-none-any.whl sha256=72c6034df47f46ccdf81869fddb81aade68056003900a8724a4f160700016a2a
+  pypdf-4.0.2-py3-none-any.whl sha256=a62daa2a24d5a608ba1b6284dde185317ce3644f89b9ebe5314d0c5d1c9f257d
+  PyYAML-6.0.1-cp39-cp39-macosx_11_0_arm64.whl sha256=c8098ddcc2a85b61647b2590f825f3db38891662cfc2fc776415143f599bb859
+  sniffio-1.3.1-py3-none-any.whl sha256=2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2
+  starlette-0.36.3-py3-none-any.whl sha256=13d429aa93a61dc40bf503e8c801db1f1bca3dc706b10ef2434a36123568f044
+  typing_extensions-4.15.0-py3-none-any.whl sha256=f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
+  urllib3-2.5.0-py3-none-any.whl sha256=e6b01673c0fa6a13e374b50871808eb3bf7046c4b125b216f6bf1cc604cff0dc
+  uvicorn-0.27.1-py3-none-any.whl sha256=5c89da2f3895767472a35556e539fd59f7edbe9b1e9c0e1c99eebeadc61838e4

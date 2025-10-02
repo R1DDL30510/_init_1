@@ -10,7 +10,10 @@
           "parameters": {
             "path": "{{$env[\"WATCH_PATH\"]}}",
             "pollingInterval": 60,
-            "events": ["add", "change"]
+            "events": [
+              "add",
+              "change"
+            ]
           }
         },
         {
@@ -50,7 +53,7 @@
           "id": "chunk_text",
           "type": "function",
           "parameters": {
-            "functionCode": "return items.map(item => ({ json: { chunks: item.json.pages.map((page, index) => ({ text: page.text, index })) } }));"
+            "functionCode": "return items.map(item => ({ json: {\n  trace_id: item.json.trace_id,\n  document: item.json.document,\n  chunks: item.json.pages.map((page, index) => ({\n    text: page.text,\n    index,\n    meta: { page: index, sha256: page.sha256 }\n  }))\n} }));"
           }
         },
         {
@@ -61,8 +64,9 @@
             "method": "POST",
             "jsonParameters": true,
             "body": {
-              "trace_id": "{{$json[\"trace_id\"] || $binary.data.sha256}}",
-              "inputs": "={{$json.chunks}}"
+              "trace_id": "={{$json.trace_id || $binary.data.sha256}}",
+              "inputs": "={{$json.chunks}}",
+              "document": "={{$json.document}}"
             }
           }
         },
@@ -71,12 +75,13 @@
           "type": "postgres",
           "parameters": {
             "operation": "executeQuery",
-            "query": "SELECT shs_ingest_upsert(:document, :chunks, :embeddings)",
+            "query": "SELECT shs_ingest_upsert(:document, :chunks, :embeddings, :model)",
             "additionalFields": {
               "values": {
                 "document": "={{$json.document}}",
                 "chunks": "={{$json.chunks}}",
-                "embeddings": "={{$json.embeddings}}"
+                "embeddings": "={{$json.embeddings}}",
+                "model": "={{$json.model}}"
               }
             }
           }
@@ -84,22 +89,70 @@
       ],
       "connections": {
         "watch_filesystem": {
-          "main": [[{"node": "hash_object", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "hash_object",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "hash_object": {
-          "main": [[{"node": "minio_put", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "minio_put",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "minio_put": {
-          "main": [[{"node": "ocr_extract", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "ocr_extract",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "ocr_extract": {
-          "main": [[{"node": "chunk_text", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "chunk_text",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "chunk_text": {
-          "main": [[{"node": "embed_chunks", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "embed_chunks",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "embed_chunks": {
-          "main": [[{"node": "persist_postgres", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "persist_postgres",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         }
       }
     },
@@ -148,16 +201,48 @@
       ],
       "connections": {
         "schedule": {
-          "main": [[{"node": "list_source", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "list_source",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "list_source": {
-          "main": [[{"node": "list_documents", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "list_documents",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "list_documents": {
-          "main": [[{"node": "diff_state", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "diff_state",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "diff_state": {
-          "main": [[{"node": "apply_updates", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "apply_updates",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         }
       }
     },
@@ -207,13 +292,37 @@
       ],
       "connections": {
         "manual_trigger": {
-          "main": [[{"node": "kill_ocr", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "kill_ocr",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "kill_ocr": {
-          "main": [[{"node": "wait_recovery", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "wait_recovery",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         },
         "wait_recovery": {
-          "main": [[{"node": "check_trace", "type": "main", "index": 0}]]
+          "main": [
+            [
+              {
+                "node": "check_trace",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
         }
       }
     }

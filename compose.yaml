@@ -152,7 +152,8 @@ services:
     user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
     environment:
       OCR_CONFIG: /app/config/config.yaml
-    command: ["python", "-m", "doctr.cli", "server", "--config", "/app/config/config.yaml"]
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     healthcheck:
       interval: 30s
       timeout: 10s
@@ -173,7 +174,11 @@ services:
     user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
     environment:
       TEI_CONFIG: /app/config/config.yaml
-    command: ["/app/tei-server", "--config", "/app/config/config.yaml"]
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB:-shs}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       interval: 30s
       timeout: 10s
@@ -194,7 +199,6 @@ services:
     user: "${SHS_UID:-1000}:${SHS_GID:-1000}"
     environment:
       RERANKER_CONFIG: /app/config/config.yaml
-    command: ["/app/reranker-server", "--config", "/app/config/config.yaml"]
     healthcheck:
       interval: 30s
       timeout: 10s

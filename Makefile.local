@@ -1,0 +1,130 @@
+SHELL := /bin/bash
+
+REGISTRY_HOST ?= registry.local
+REGISTRY_PORT ?= 5000
+REGISTRY_NAMESPACE ?= shs
+IMAGE_TAG ?= local
+REGISTRY_ADDR := $(REGISTRY_HOST):$(REGISTRY_PORT)
+SERVICES := ocr tei reranker
+IMAGE_NAME_ocr := offline-doctr
+IMAGE_NAME_tei := local-tei
+IMAGE_NAME_reranker := local-reranker
+
+.PHONY: wheelhouse models registry registry-down build push capture-digests health verify
+
+wheelhouse:
+	./scripts/build_wheelhouse.sh
+
+models:
+	./scripts/fetch_models.sh
+
+registry:
+	@if docker ps --format '{{.Names}}' | grep -q '^shs-registry$$'; then \
+		echo "[registry] already running"; \
+	else \
+		docker rm -f shs-registry >/dev/null 2>&1 || true; \
+		docker run -d --name shs-registry --restart=always \
+		  -p 127.0.0.1:$(REGISTRY_PORT):5000 \
+		  registry:2 >/dev/null; \
+		echo "[registry] started shs-registry on 127.0.0.1:$(REGISTRY_PORT)"; \
+	fi
+
+registry-down:
+	@if docker ps -a --format '{{.Names}}' | grep -q '^shs-registry$$'; then \
+		docker rm -f shs-registry >/dev/null; \
+		echo "[registry] stopped"; \
+	fi
+
+build: wheelhouse models
+	@for svc in $(SERVICES); do \
+		var="IMAGE_NAME_$${svc}"; \
+		image_name="${!var}"; \
+		ref="$(REGISTRY_ADDR)/$(REGISTRY_NAMESPACE)/$${image_name}:$(IMAGE_TAG)"; \
+		echo "[build] $$svc -> $$ref"; \
+		docker build -f services/$$svc/Dockerfile -t $$ref .; \
+	done
+
+push:
+	@for svc in $(SERVICES); do \
+		var="IMAGE_NAME_$${svc}"; \
+		image_name="${!var}"; \
+		ref="$(REGISTRY_ADDR)/$(REGISTRY_NAMESPACE)/$${image_name}:$(IMAGE_TAG)"; \
+		echo "[push] $$ref"; \
+		docker push $$ref; \
+	done
+
+capture-digests:
+	@REGISTRY_HOST=$(REGISTRY_HOST) \
+	 REGISTRY_PORT=$(REGISTRY_PORT) \
+	 REGISTRY_NAMESPACE=$(REGISTRY_NAMESPACE) \
+	 IMAGE_TAG=$(IMAGE_TAG) \
+	 python3 - <<'PY'
+	import os
+	import subprocess
+	from pathlib import Path
+	
+	host = os.environ['REGISTRY_HOST']
+	port = os.environ['REGISTRY_PORT']
+	namespace = os.environ['REGISTRY_NAMESPACE']
+	tag = os.environ['IMAGE_TAG']
+	services = {
+	    'ocr': 'offline-doctr',
+	    'tei': 'local-tei',
+	    'reranker': 'local-reranker',
+	}
+	root = Path.cwd()
+	versions_path = root / 'locks' / 'VERSIONS.lock'
+	if not versions_path.exists():
+	    raise SystemExit('locks/VERSIONS.lock missing; initialise it first')
+	
+	replacements = {}
+	for service, image in services.items():
+	    ref = f"{host}:{port}/{namespace}/{image}:{tag}"
+	    output = subprocess.check_output([
+	        'docker', 'image', 'inspect', ref, '--format', '{{index .RepoDigests 0}}'
+	    ], text=True).strip()
+	    if '@' not in output:
+	        raise SystemExit(f'no RepoDigests entry for {ref}')
+	    digest = output.split('@', 1)[1]
+	    replacements[service] = (ref, digest)
+	
+	lines = versions_path.read_text().splitlines()
+	for idx, line in enumerate(lines):
+	    stripped = line.strip()
+	    if stripped.endswith(':') and not stripped.startswith('digest'):
+	        service = stripped.rstrip(':')
+	        if service in replacements:
+	            ref, digest = replacements[service]
+	            if idx + 1 < len(lines):
+	                lines[idx + 1] = f"    image: {ref}"
+	            if idx + 2 < len(lines):
+	                lines[idx + 2] = f"    digest: \"{digest}\""
+	versions_path.write_text('\n'.join(lines) + '\n')
+	
+	for env_file in (root / '.env.example', root / '.env.local'):
+	    if not env_file.exists():
+	        continue
+	    env_lines = env_file.read_text().splitlines()
+	    for idx, line in enumerate(env_lines):
+	        if '=' not in line or line.lstrip().startswith('#'):
+	            continue
+	        key, value = line.split('=', 1)
+	        service = key[:-6].lower() if key.endswith('_IMAGE') else None
+	        if service in replacements:
+	            ref, digest = replacements[service]
+	            env_lines[idx] = f"{key}={ref}@{digest}"
+	    env_file.write_text('\n'.join(env_lines) + '\n')
+	
+	print('captured digests for', ', '.join(f"{srv}:{dig}" for srv, (_, dig) in replacements.items()))
+	PY
+
+health:
+	@for svc in $(SERVICES); do \
+		var="IMAGE_NAME_$${svc}"; \
+		image_name="${!var}"; \
+		ref="$(REGISTRY_ADDR)/$(REGISTRY_NAMESPACE)/$${image_name}:$(IMAGE_TAG)"; \
+		docker inspect $$ref >/dev/null 2>&1 && echo "[health] image available: $$ref" || echo "[health] missing image: $$ref"; \
+	done
+
+verify:
+	./scripts/verify_hashes.sh
