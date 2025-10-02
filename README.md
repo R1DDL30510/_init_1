@@ -13,7 +13,7 @@
 8. [Contributing Guidelines](#contributing-guidelines)
 
 ## Executive Overview
-The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prioritizes determinism, GDPR alignment, and auditable operations. Docker Compose orchestrates proxy, OpenWebUI, n8n workflows, Postgres with pgvector, MinIO object storage, OCR, TEI embeddings, reranker, and optional Ollama services. All images and models are pinned through `VERSIONS.lock`, and `make` automation guards reproducible secrets, backups, and status reporting.
+The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prioritizes determinism, GDPR alignment, and auditable operations. Docker Compose orchestrates proxy, OpenWebUI, n8n workflows, Postgres with pgvector, MinIO object storage, OCR, TEI embeddings, reranker, and optional Ollama services. Runtime images (including the private GHCR builds) are pinned through `VERSIONS.lock`, and `make` automation now emits `age`-encrypted backups with traceable logging and secrets hygiene.
 
 - **Primary strategy pillars**: local-first execution, least privilege, deterministic artifacts, structured observability, and fail-closed security posture.
 - **Compliance tracking**: see [`docs/audit-matrix.md`](docs/audit-matrix.md) for a scored view against SHS principles and relevant industry expectations.
@@ -59,7 +59,7 @@ The SHS repository delivers a fully offline, TLS-enforced RAG pipeline that prio
     ```bash
     make bootstrap
     ```
-3. Update `VERSIONS.lock` with verified image digests and model revisions.
+3. Update `VERSIONS.lock` with verified image digests and model revisions (private GHCR services included).
 4. Launch the stack (defaults to the `minimal` profile):
     ```bash
     make up
@@ -90,6 +90,7 @@ Review `.env.example` for the full catalog; key highlights include:
 - `SHS_BASE`, `SHS_DOMAIN`, `TLS_MODE`, `WATCH_PATH`, `LAN_ALLOWLIST`, `OFFLINE` — core bootstrap inputs.
 - `POSTGRES_*`, `MINIO_*`, `N8N_*`, `OPENWEBUI_*` — service credentials sourced from host secrets.
 - `*_IMAGE` entries — pinned container references synchronized with `VERSIONS.lock`.
+- `BACKUP_AGE_RECIPIENTS(_FILE)` and `BACKUP_AGE_IDENTITIES(_FILE)` — control the `age` recipients for encryption and the private keys for restores. Host operators must stage these files securely outside of version control.
 
 ### Deterministic TLS & Secrets
 - `make bootstrap` calls `scripts/tls/gen_local_ca.sh` to mint a reproducible local CA (`secrets/tls/ca.crt`) and service leaf certificates (`secrets/tls/leaf.pem`).

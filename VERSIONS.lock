@@ -18,13 +18,13 @@ services:
     digest: "sha256:b095ae7c04b9f26dcd7834ebc1f38e15fba58d3518c49c1118c56e309a5e5e91"
   ocr:
     image: ghcr.io/shs/offline-doctr:0.7.1
-    digest: ": Bitte durch Operator verifizieren! Zugriff auf ghcr.io/shs/offline-doctr:0.7.1 erforderlich."
+    digest: "sha256:99eaadaf0d242f8dfbd0429d5a1486cd9872faa1e043b423c33d1ff877a1c9f1"
   tei:
     image: ghcr.io/shs/local-tei:0.10.1
-    digest: ": Bitte durch Operator verifizieren! Zugriff auf ghcr.io/shs/local-tei:0.10.1 erforderlich."
+    digest: "sha256:ddbf621c0bc9c63b1133c57d20d9af31d02cb0463fb38498c990adce700fc918"
   reranker:
     image: ghcr.io/shs/local-reranker:0.3.0
-    digest: ": Bitte durch Operator verifizieren! Zugriff auf ghcr.io/shs/local-reranker:0.3.0 erforderlich."
+    digest: "sha256:26470d74a4dfe0e46ec06429b24737aacca5a1f4f661a9e6e3fcd6ea0669728b"
   ollama:
     image: docker.io/ollama/ollama:0.1.32
     digest: "sha256:bef60d0ca6194ae88df3107cd0f53cc44cc2d0e3d1a6d9798bab9ef80e31e364"
