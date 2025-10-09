@@ -28,11 +28,13 @@ Alle Docker-Images sind in `VERSIONS.lock` festgehalten. Dadurch wissen wir jede
 
 ## 2. Orientierung & wichtige Unterlagen
 - **Einstieg:** [`docs/project-compendium.md`](docs/project-compendium.md) – Überblick über alle Bereiche des "Hauses" und passende Ansprechpartner.
+- **Repository-Karte:** [`docs/repository-map.md`](docs/repository-map.md) – vollständige Pfadübersicht inklusive Validierungs- und Automationshinweisen.
 - **Audit-Vorbereitung:** [`docs/pre-release-audit.md`](docs/pre-release-audit.md) – Checkliste, bevor neue Funktionen für externe Tests freigeschaltet werden.
 - **Governance:** [`docs/house-governance.md`](docs/house-governance.md) – Wer entscheidet was, welche Abhängigkeiten es gibt und wie Freigaben dokumentiert werden.
 - **Zitate & Hinweise:** Überall in der Dokumentation helfen kurze Randbemerkungen dabei, die gemeinsame Sprache beizubehalten.
 
 ## 3. Verzeichnisführung ("Hausplan")
+Die untenstehende Tabelle fasst die wichtigsten Layer kurz zusammen. Für eine vollständige, gepflegte Zuordnung jedes Ordners – inklusive Validierungs-Skripten, Lockfile-Quellen und Prüfpfaden – siehe die Repository-Karte in [`docs/repository-map.md`](docs/repository-map.md).
 | Bereich | Ordner | Zweck | Mehr dazu |
 | --- | --- | --- | --- |
 | Fundament | [`fundament/`](fundament/) | Basiseinstellungen für das Wirtssystem, z. B. Docker-Vorgaben. | [`docs/architecture.md`](docs/architecture.md) |
@@ -54,6 +56,7 @@ Alle Docker-Images sind in `VERSIONS.lock` festgehalten. Dadurch wissen wir jede
 - [`docs/audit-matrix.md`](docs/audit-matrix.md): Bewertet den Status wichtiger Kontrollen, inklusive nächster Schritte.
 - [`docs/pre-release-audit.md`](docs/pre-release-audit.md): Prüfbericht mit offenen Punkten, bevor Funktionen den Testbereich verlassen.
 - [`docs/house-governance.md`](docs/house-governance.md): Dokumentiert Verantwortliche und Freigaben.
+- [`docs/stack-plan-review.md`](docs/stack-plan-review.md): Ordnet externe Vorschläge zum Image-Pinning in die bestehende SHS-Dokumentation ein.
 - [`docs/runbook-ga-02-delete-playbook.md`](docs/runbook-ga-02-delete-playbook.md): Vorlage für zukünftige Löschübungen.
 
 ## 5. Betrieb in einfachen Schritten

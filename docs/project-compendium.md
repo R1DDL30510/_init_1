@@ -23,10 +23,12 @@ This compendium guides reviewers, operators, and new contributors through the en
   - Start with [`README.md`](../README.md) for the Atlas and change-management roadmap.
   - Use this compendium to understand how documents intersect; inline links point to the canonical source.
   - Follow the [Whole-House governance chapter](#6-governance-and-controls) before promoting beyond Wardrobe.
+  - Keep the repository map [`docs/repository-map.md`](repository-map.md) at hand for an authoritative directory → validation lookup.
 - **Quick reference map:**
   - **Operational:** [`RUNBOOK.md`](../RUNBOOK.md) → lifecycle commands, rotations, drills.
   - **Security:** [`SECURITY.md`](../SECURITY.md) → threat model and control register.
   - **Compliance:** [`docs/audit-matrix.md`](audit-matrix.md) → scored industry alignment.
+  - **Repository map:** [`docs/repository-map.md`](repository-map.md) → canonical cross-reference of folders, scripts, and audits.
   - **Audit readiness:** [`docs/pre-release-audit.md`](pre-release-audit.md) → gating tasks with evidence expectations.
 
 ## 1. Fundament (Host Foundations)
@@ -43,7 +45,9 @@ This compendium guides reviewers, operators, and new contributors through the en
   - [`basement/toolbox/projects/toolbox/README.md`](../basement/toolbox/projects/toolbox/README.md) — canonical compose experiments.
   - [`docs/audit-matrix.md`](audit-matrix.md#platform-security) — control scores related to local execution.
   - [`docs/revision-2025-09-28.md`](revision-2025-09-28.md#basement) — backlog of toolbox enhancements.
+  - [`docs/stack-plan-review.md`](stack-plan-review.md) — integration guide aligning external image-pinning proposals with the maintained lockfile and compose flow.
 - **Operational guidance:** Align new scripts with [`scripts/`](../scripts/) and mirror purpose statements in the toolbox README before automation changes.
+  - Use `make lock`, `make sbom`, and `make audit` when refreshing image digests so SBOM and scan artefacts stay consistent across CI and local runs.【F:Makefile†L95-L166】
 
 ## 3. Wardrobe (Overlay Galleria)
 - **Responsibilities:** Provide CPU/GPU/CI overlays, wrappers (e.g., `gcodex`), and parity tooling between hosts.
